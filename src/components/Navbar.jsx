@@ -5,12 +5,12 @@ import { navItems } from '../nav-items';
 
 const Navbar = () => {
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-discord-dark-secondary">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <span className="text-xl font-bold text-gray-800">Home</span>
+              <span className="text-xl font-bold text-discord-interactive-active">Home</span>
             </Link>
           </div>
           <div className="flex items-center">
@@ -20,15 +20,15 @@ const Navbar = () => {
                   <NavigationMenuItem key={item.to}>
                     {item.subItems ? (
                       <>
-                        <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>
+                        <NavigationMenuTrigger className="text-discord-interactive-normal hover:text-discord-interactive-hover">{item.title}</NavigationMenuTrigger>
                         <NavigationMenuContent>
-                          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] bg-discord-dark-primary">
                             {item.subItems.map((subItem) => (
                               <li key={subItem.to}>
                                 <NavigationMenuLink asChild>
                                   <Link
                                     to={subItem.to}
-                                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-discord-channeltextarea-background hover:text-discord-interactive-active focus:bg-discord-channeltextarea-background focus:text-discord-interactive-active"
                                   >
                                     <div className="text-sm font-medium leading-none">{subItem.title}</div>
                                   </Link>
@@ -42,7 +42,7 @@ const Navbar = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to={item.to}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-discord-channeltextarea-background hover:text-discord-interactive-active focus:bg-discord-channeltextarea-background focus:text-discord-interactive-active"
                         >
                           {item.title}
                         </Link>

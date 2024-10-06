@@ -51,6 +51,18 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        discord: {
+          'dark-primary': '#36393f',
+          'dark-secondary': '#2f3136',
+          'dark-tertiary': '#202225',
+          'text-normal': '#dcddde',
+          'text-muted': '#72767d',
+          'text-link': '#00b0f4',
+          'channeltextarea-background': '#40444b',
+          'interactive-normal': '#b9bbbe',
+          'interactive-hover': '#dcddde',
+          'interactive-active': '#ffffff',
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
