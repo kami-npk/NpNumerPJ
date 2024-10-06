@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { FunctionSquareIcon, GridIcon, TrendingUpIcon, ArrowRightLeftIcon, PercentIcon, FractionIcon } from "lucide-react";
+import { FunctionSquareIcon, GridIcon, TrendingUpIcon, ArrowRightLeftIcon, PercentIcon, DivideIcon } from "lucide-react";
 
 const sections = [
   {
@@ -41,7 +41,7 @@ const sections = [
   },
   {
     title: "Differential Equations",
-    icon: FractionIcon,
+    icon: DivideIcon,
     to: "/differential",
     description: "Techniques for solving differential equations numerically",
     content: "Covers methods such as Euler's Method, Runge-Kutta methods, and Finite Difference methods for approximating solutions to ordinary and partial differential equations."

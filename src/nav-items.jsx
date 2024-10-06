@@ -1,5 +1,5 @@
 import React from 'react';
-import { HomeIcon, FunctionSquareIcon, GridIcon, TrendingUpIcon, ArrowRightLeftIcon, PercentIcon, FractionIcon } from "lucide-react";
+import { HomeIcon, FunctionSquareIcon, GridIcon, TrendingUpIcon, ArrowRightLeftIcon, PercentIcon, DivideIcon } from "lucide-react";
 import Home from "./pages/Home";
 
 // Placeholder components for missing pages
@@ -89,7 +89,7 @@ export const navItems = [
   {
     title: "Differential Equations",
     to: "/differential",
-    icon: <FractionIcon className="h-4 w-4" />,
+    icon: <DivideIcon className="h-4 w-4" />,
     page: <Differential />,
     subItems: [
       { title: "Numerical Differentiation", to: "/differential/numerical-differentiation" },
