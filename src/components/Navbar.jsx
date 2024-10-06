@@ -8,7 +8,7 @@ const Navbar = () => {
     <nav className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex">
+          <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
               <span className="text-xl font-bold text-gray-800">Home</span>
             </Link>
@@ -16,7 +16,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <NavigationMenu>
               <NavigationMenuList>
-                {navItems.map((item) => (
+                {navItems.slice(1).map((item) => (
                   <NavigationMenuItem key={item.to}>
                     {item.subItems ? (
                       <>
