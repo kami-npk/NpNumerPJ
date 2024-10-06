@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FunctionSquareIcon, GridIcon, TrendingUpIcon, ArrowRightLeftIcon, PercentIcon, DivideIcon } from "lucide-react";
 
@@ -49,13 +49,19 @@ const sections = [
 ];
 
 const Home = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-4xl font-bold text-center mb-2">Numerical Methods</h1>
       <p className="text-xl text-center text-gray-600 mb-8">Explore various numerical methods and algorithms</p>
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {sections.map((section) => (
-          <Card key={section.to} className="hover:shadow-lg transition-shadow duration-300">
+          <Card 
+            key={section.to} 
+            className="hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl cursor-pointer"
+            onClick={() => navigate(section.to)}
+          >
             <CardHeader>
               <CardTitle className="flex items-center text-2xl">
                 <section.icon className="h-8 w-8 mr-3" />
@@ -65,9 +71,6 @@ const Home = () => {
             </CardHeader>
             <CardContent>
               <p className="text-gray-700">{section.content}</p>
-              <Link to={section.to} className="mt-4 inline-block text-blue-600 hover:text-blue-800 hover:underline">
-                Explore {section.title} →
-              </Link>
             </CardContent>
           </Card>
         ))}
