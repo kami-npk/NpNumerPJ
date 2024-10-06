@@ -1,11 +1,21 @@
+import React from 'react';
 import { HomeIcon, FunctionSquareIcon, GridIcon, TrendingUpIcon, ArrowRightLeftIcon, PercentIcon, FractionIcon } from "lucide-react";
 import Home from "./pages/Home";
-import RootOfEquations from "./pages/RootOfEquations";
-import LinearAlgebra from "./pages/LinearAlgebra";
-import Interpolation from "./pages/Interpolation";
-import Extrapolation from "./pages/Extrapolation";
-import Integration from "./pages/Integration";
-import Differential from "./pages/Differential";
+
+// Placeholder components for missing pages
+const PlaceholderComponent = ({ title }) => (
+  <div className="p-4">
+    <h1 className="text-2xl font-bold">{title}</h1>
+    <p>This is a placeholder for the {title} page.</p>
+  </div>
+);
+
+const RootOfEquations = () => <PlaceholderComponent title="Root of Equations" />;
+const LinearAlgebra = () => <PlaceholderComponent title="Linear Algebra Equations" />;
+const Interpolation = () => <PlaceholderComponent title="Interpolation Equations" />;
+const Extrapolation = () => <PlaceholderComponent title="Extrapolation Equations" />;
+const Integration = () => <PlaceholderComponent title="Integration Equations" />;
+const Differential = () => <PlaceholderComponent title="Differential Equations" />;
 
 export const navItems = [
   {
