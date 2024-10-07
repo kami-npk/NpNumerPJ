@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { navItems } from "./nav-items";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import RootOfEquations from "./pages/RootOfEquations";
 
 const queryClient = new QueryClient();
 
@@ -16,6 +17,7 @@ const App = () => (
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/root-of-equations" element={<RootOfEquations />} />
           {navItems.map(({ to, page }) => (
             <Route key={to} path={to} element={page} />
           ))}
