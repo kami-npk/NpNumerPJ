@@ -6,6 +6,7 @@ import { navItems } from "./nav-items";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import RootOfEquations from "./pages/RootOfEquations";
+import GraphicalMethod from "./pages/GraphicalMethod";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +19,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/root-of-equations" element={<RootOfEquations />} />
+          <Route path="/root-of-equations/graphical" element={<GraphicalMethod />} />
           {navItems.map(({ to, page }) => (
             <Route key={to} path={to} element={page} />
           ))}
