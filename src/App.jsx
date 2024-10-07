@@ -5,7 +5,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { navItems } from "./nav-items";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import RootOfEquations from "./pages/RootOfEquations";
 import GraphicalMethod from "./pages/GraphicalMethod";
 
 const queryClient = new QueryClient();
@@ -18,14 +17,13 @@ const App = () => (
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/root-of-equations" element={<RootOfEquations />} />
-          <Route path="/root-of-equations/graphical" element={<GraphicalMethod />} />
+          <Route path="/root-of-equations/*" element={<GraphicalMethod />} />
           {navItems.map(({ to, page }) => (
             <Route key={to} path={to} element={page} />
           ))}
           {navItems.flatMap(item => 
             item.subItems ? item.subItems.map(subItem => (
-              <Route key={subItem.to} path={subItem.to} element={<div className="p-4"><h1 className="text-2xl font-bold mb-4">{subItem.title}</h1><p>Content for {subItem.title} goes here.</p></div>} />
+              <Route key={subItem.to} path={subItem.to} element={<GraphicalMethod />} />
             )) : []
           )}
         </Routes>
