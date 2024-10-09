@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 
 const BisectionSearch = () => {
   const [equation, setEquation] = useState("x^2 - 4");
@@ -13,6 +14,7 @@ const BisectionSearch = () => {
   const [precision, setPrecision] = useState("0.0001");
   const [data, setData] = useState([]);
   const [result, setResult] = useState(null);
+  const [errorData, setErrorData] = useState([]);
 
   const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
@@ -23,6 +25,7 @@ const BisectionSearch = () => {
     const MAX = 50;
     const epsilon = parseFloat(precision);
     const newData = [];
+    const newErrorData = [];
     let xlNum = parseFloat(xl);
     let xrNum = parseFloat(xr);
 
@@ -37,17 +40,20 @@ const BisectionSearch = () => {
       iter++;
       if (fXm * fXr > 0) {
         ea = error(xrNum, xm);
-        newData.push({ iteration: iter, Xl: xlNum, Xm: xm, Xr: xrNum });
+        newData.push({ iteration: iter, Xl: xlNum, Xm: xm, Xr: xrNum, Error: ea });
+        newErrorData.push({ iteration: iter, error: ea });
         xrNum = xm;
       } else if (fXm * fXr < 0) {
         ea = error(xlNum, xm);
-        newData.push({ iteration: iter, Xl: xlNum, Xm: xm, Xr: xrNum });
+        newData.push({ iteration: iter, Xl: xlNum, Xm: xm, Xr: xrNum, Error: ea });
+        newErrorData.push({ iteration: iter, error: ea });
         xlNum = xm;
       }
     } while (ea > epsilon && iter < MAX);
 
     setResult(xm);
     setData(newData);
+    setErrorData(newErrorData);
   };
 
   return (
@@ -128,6 +134,7 @@ const BisectionSearch = () => {
                   <TableHead>XL</TableHead>
                   <TableHead>XM</TableHead>
                   <TableHead>XR</TableHead>
+                  <TableHead>Error (%)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -137,10 +144,39 @@ const BisectionSearch = () => {
                     <TableCell>{row.Xl.toPrecision(6)}</TableCell>
                     <TableCell>{row.Xm.toPrecision(6)}</TableCell>
                     <TableCell>{row.Xr.toPrecision(6)}</TableCell>
+                    <TableCell>{row.Error.toPrecision(6)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
+          </CardContent>
+        </Card>
+      )}
+
+      {errorData.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Error Graph</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <LineChart
+              width={600}
+              height={300}
+              data={errorData}
+              margin={{
+                top: 5,
+                right: 30,
+                left: 20,
+                bottom: 5,
+              }}
+            >
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="iteration" />
+              <YAxis />
+              <Tooltip />
+              <Legend />
+              <Line type="monotone" dataKey="error" stroke="#8884d8" activeDot={{ r: 8 }} />
+            </LineChart>
           </CardContent>
         </Card>
       )}
