@@ -21,7 +21,7 @@ const BisectionSearch = () => {
     let xm, fXm, fXr, ea, scope;
     let iter = 0;
     const MAX = 50;
-    const e = parseFloat(precision);
+    const epsilon = parseFloat(precision);
     const newData = [];
     let xlNum = parseFloat(xl);
     let xrNum = parseFloat(xr);
@@ -44,7 +44,7 @@ const BisectionSearch = () => {
         newData.push({ iteration: iter, Xl: xlNum, Xm: xm, Xr: xrNum });
         xlNum = xm;
       }
-    } while (ea > e && iter < MAX);
+    } while (ea > epsilon && iter < MAX);
 
     setResult(xm);
     setData(newData);
