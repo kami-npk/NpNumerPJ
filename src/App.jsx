@@ -17,7 +17,7 @@ const App = () => (
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/root-of-equations/*" element={<GraphicalMethod />} />
+          <Route path="/root-of-equations/:method" element={<GraphicalMethod />} />
           {navItems.map(({ to, page }) => (
             <Route key={to} path={to} element={page} />
           ))}
