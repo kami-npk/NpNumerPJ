@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import { evaluate } from 'mathjs';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +12,7 @@ const BisectionSearch = () => {
   const [x, setX] = useState(0);
   const [xl, setXL] = useState("");
   const [xr, setXR] = useState("");
+  const [precision, setPrecision] = useState("0.00001");
 
   const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
@@ -19,7 +20,7 @@ const BisectionSearch = () => {
     let xm, fXm, fXr, ea, scope;
     let iter = 0;
     const MAX = 50;
-    const e = 0.00001;
+    const e = parseFloat(precision);
     const newData = [];
 
     do {
@@ -86,6 +87,16 @@ const BisectionSearch = () => {
                 type="number"
                 value={xr}
                 onChange={(e) => setXR(e.target.value)}
+                className="max-w-xs"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="precision">Precision</Label>
+              <Input
+                id="precision"
+                type="number"
+                value={precision}
+                onChange={(e) => setPrecision(e.target.value)}
                 className="max-w-xs"
               />
             </div>

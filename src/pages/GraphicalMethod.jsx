@@ -17,7 +17,7 @@ const GraphicalMethod = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Root of Equations - {method}</h1>
+      <h1 className="text-3xl font-bold mb-6 text-discord-interactive-active">Root of Equations - {method}</h1>
       {renderMethod()}
     </div>
   );
