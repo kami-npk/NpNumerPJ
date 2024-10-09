@@ -7,10 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const BisectionSearch = () => {
-  const [equation, setEquation] = useState("(x^4)-13");
+  const [equation, setEquation] = useState("x^2 - 4");
   const [xl, setXL] = useState("");
   const [xr, setXR] = useState("");
-  const [precision, setPrecision] = useState("0.00001");
+  const [precision, setPrecision] = useState("0.0001");
   const [data, setData] = useState([]);
   const [result, setResult] = useState(null);
 
@@ -51,10 +51,10 @@ const BisectionSearch = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card className="mb-8">
+    <div className="space-y-8">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Bisection Search</CardTitle>
+          <CardTitle>Bisection Search Method</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={calculateBisection} className="space-y-4">
@@ -64,8 +64,7 @@ const BisectionSearch = () => {
                 id="equation"
                 value={equation}
                 onChange={(e) => setEquation(e.target.value)}
-                className="max-w-xs"
-                placeholder="e.g., (x^4)-13"
+                placeholder="e.g., x^2 - 4"
               />
             </div>
             <div className="space-y-2">
@@ -75,8 +74,7 @@ const BisectionSearch = () => {
                 type="number"
                 value={xl}
                 onChange={(e) => setXL(e.target.value)}
-                className="max-w-xs"
-                placeholder="e.g., 1.5"
+                placeholder="e.g., 0"
                 required
               />
             </div>
@@ -87,8 +85,7 @@ const BisectionSearch = () => {
                 type="number"
                 value={xr}
                 onChange={(e) => setXR(e.target.value)}
-                className="max-w-xs"
-                placeholder="e.g., 2.0"
+                placeholder="e.g., 3"
                 required
               />
             </div>
@@ -99,8 +96,7 @@ const BisectionSearch = () => {
                 type="number"
                 value={precision}
                 onChange={(e) => setPrecision(e.target.value)}
-                className="max-w-xs"
-                placeholder="e.g., 0.00001"
+                placeholder="e.g., 0.0001"
               />
             </div>
             <Button type="submit">Calculate</Button>
@@ -109,12 +105,12 @@ const BisectionSearch = () => {
       </Card>
 
       {result !== null && (
-        <Card className="mb-8">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Result</CardTitle>
+            <CardTitle>Result</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-lg">Root approximation: {result.toPrecision(6)}</p>
+            <p>Root approximation: {result.toPrecision(6)}</p>
           </CardContent>
         </Card>
       )}
@@ -122,25 +118,25 @@ const BisectionSearch = () => {
       {data.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl font-semibold">Iterations</CardTitle>
+            <CardTitle>Iterations</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-[100px]">Iteration</TableHead>
+                  <TableHead>Iteration</TableHead>
                   <TableHead>XL</TableHead>
                   <TableHead>XM</TableHead>
                   <TableHead>XR</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.map((element, index) => (
+                {data.map((row, index) => (
                   <TableRow key={index}>
-                    <TableCell>{element.iteration}</TableCell>
-                    <TableCell>{element.Xl.toPrecision(6)}</TableCell>
-                    <TableCell>{element.Xm.toPrecision(6)}</TableCell>
-                    <TableCell>{element.Xr.toPrecision(6)}</TableCell>
+                    <TableCell>{row.iteration}</TableCell>
+                    <TableCell>{row.Xl.toPrecision(6)}</TableCell>
+                    <TableCell>{row.Xm.toPrecision(6)}</TableCell>
+                    <TableCell>{row.Xr.toPrecision(6)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

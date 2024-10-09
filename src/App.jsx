@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { navItems } from "./nav-items";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import GraphicalMethod from "./pages/GraphicalMethod";
+import BisectionSearchPage from "./pages/BisectionSearchPage";
 
 const queryClient = new QueryClient();
 
@@ -17,13 +17,13 @@ const App = () => (
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/root-of-equations/:method" element={<GraphicalMethod />} />
+          <Route path="/root-of-equations/bisection" element={<BisectionSearchPage />} />
           {navItems.map(({ to, page }) => (
             <Route key={to} path={to} element={page} />
           ))}
           {navItems.flatMap(item => 
             item.subItems ? item.subItems.map(subItem => (
-              <Route key={subItem.to} path={subItem.to} element={<GraphicalMethod />} />
+              <Route key={subItem.to} path={subItem.to} element={<BisectionSearchPage />} />
             )) : []
           )}
         </Routes>
