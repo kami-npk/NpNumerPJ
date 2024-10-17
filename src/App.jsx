@@ -2,10 +2,14 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { navItems } from "./nav-items";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
-import BisectionSearchPage from "./pages/BisectionSearchPage";
+import RootOfEquations from "./pages/RootOfEquations";
+import LinearAlgebra from "./pages/LinearAlgebra";
+import Interpolation from "./pages/Interpolation";
+import Extrapolation from "./pages/Extrapolation";
+import Integration from "./pages/Integration";
+import Differential from "./pages/Differential";
 
 const queryClient = new QueryClient();
 
@@ -17,15 +21,12 @@ const App = () => (
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/root-of-equations/bisection" element={<BisectionSearchPage />} />
-          {navItems.map(({ to, page }) => (
-            <Route key={to} path={to} element={page} />
-          ))}
-          {navItems.flatMap(item => 
-            item.subItems ? item.subItems.map(subItem => (
-              <Route key={subItem.to} path={subItem.to} element={<BisectionSearchPage />} />
-            )) : []
-          )}
+          <Route path="/root-of-equations/*" element={<RootOfEquations />} />
+          <Route path="/linear-algebra/*" element={<LinearAlgebra />} />
+          <Route path="/interpolation/*" element={<Interpolation />} />
+          <Route path="/extrapolation/*" element={<Extrapolation />} />
+          <Route path="/integration/*" element={<Integration />} />
+          <Route path="/differential/*" element={<Differential />} />
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
