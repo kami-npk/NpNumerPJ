@@ -6,8 +6,6 @@ import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Slider } from "@/components/ui/slider";
 
 const FalsePositionMethods = () => {
   const [equation, setEquation] = useState("x^2 - 4");
@@ -17,7 +15,6 @@ const FalsePositionMethods = () => {
   const [iterations, setIterations] = useState([]);
   const [graphData, setGraphData] = useState([]);
   const [errorData, setErrorData] = useState([]);
-  const [selectedIteration, setSelectedIteration] = useState(0);
 
   const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
@@ -77,13 +74,6 @@ const FalsePositionMethods = () => {
         <Tooltip />
         <Legend />
         <Line type="monotone" dataKey="y" stroke="#8884d8" name="f(x)" />
-        {iterations[selectedIteration] && (
-          <>
-            <Line type="monotone" dataKey={(d) => d.x === iterations[selectedIteration].xl ? evaluate(equation, { x: iterations[selectedIteration].xl }) : null} stroke="#ff0000" name="XL" dot={{ r: 5 }} />
-            <Line type="monotone" dataKey={(d) => d.x === iterations[selectedIteration].xr ? evaluate(equation, { x: iterations[selectedIteration].xr }) : null} stroke="#00ff00" name="XR" dot={{ r: 5 }} />
-            <Line type="monotone" dataKey={(d) => d.x === iterations[selectedIteration].xm ? evaluate(equation, { x: iterations[selectedIteration].xm }) : null} stroke="#0000ff" name="XM" dot={{ r: 5 }} />
-          </>
-        )}
       </LineChart>
     </ResponsiveContainer>
   );
@@ -156,67 +146,57 @@ const FalsePositionMethods = () => {
       )}
 
       {graphData.length > 0 && (
-        <Accordion type="single" collapsible className="mt-6">
-          <AccordionItem value="equation-graph">
-            <AccordionTrigger>Equation Graph</AccordionTrigger>
-            <AccordionContent>
-              <EquationGraph />
-              <div className="mt-4">
-                <Label>Iteration: {selectedIteration + 1}</Label>
-                <Slider
-                  min={0}
-                  max={iterations.length - 1}
-                  step={1}
-                  value={[selectedIteration]}
-                  onValueChange={(value) => setSelectedIteration(value[0])}
-                />
-              </div>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Equation Graph</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <EquationGraph />
+          </CardContent>
+        </Card>
       )}
 
       {errorData.length > 0 && (
-        <Accordion type="single" collapsible className="mt-6">
-          <AccordionItem value="error-graph">
-            <AccordionTrigger>Error Graph</AccordionTrigger>
-            <AccordionContent>
-              <ErrorGraph />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Error Graph</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ErrorGraph />
+          </CardContent>
+        </Card>
       )}
 
       {iterations.length > 0 && (
-        <Accordion type="single" collapsible className="mt-6">
-          <AccordionItem value="iteration-table">
-            <AccordionTrigger>Iteration Table</AccordionTrigger>
-            <AccordionContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Iteration</TableHead>
-                    <TableHead>XL</TableHead>
-                    <TableHead>XM</TableHead>
-                    <TableHead>XR</TableHead>
-                    <TableHead>Error (%)</TableHead>
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Iteration Table</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Iteration</TableHead>
+                  <TableHead>XL</TableHead>
+                  <TableHead>XM</TableHead>
+                  <TableHead>XR</TableHead>
+                  <TableHead>Error (%)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {iterations.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell>{row.iteration}</TableCell>
+                    <TableCell>{row.xl.toPrecision(7)}</TableCell>
+                    <TableCell>{row.xm.toPrecision(7)}</TableCell>
+                    <TableCell>{row.xr.toPrecision(7)}</TableCell>
+                    <TableCell>{row.error.toPrecision(7)}</TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {iterations.map((row, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{row.iteration}</TableCell>
-                      <TableCell>{row.xl.toPrecision(7)}</TableCell>
-                      <TableCell>{row.xm.toPrecision(7)}</TableCell>
-                      <TableCell>{row.xr.toPrecision(7)}</TableCell>
-                      <TableCell>{row.error.toPrecision(7)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       )}
     </div>
   );
