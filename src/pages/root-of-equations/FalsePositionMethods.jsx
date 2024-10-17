@@ -15,12 +15,14 @@ const FalsePositionMethods = () => {
   const [result, setResult] = useState(null);
   const [iterations, setIterations] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [showResults, setShowResults] = useState(false);
 
   const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
   const calculateFalsePosition = (e) => {
     e.preventDefault();
     setErrorMessage(null);
+    setShowResults(false);
     const xlNum = parseFloat(xl);
     const xrNum = parseFloat(xr);
     let xm, fXm, fXr, fXl, ea;
@@ -50,6 +52,7 @@ const FalsePositionMethods = () => {
 
       setResult(xm);
       setIterations(newIterations);
+      setShowResults(true);
     } catch (error) {
       setErrorMessage("Error in calculation. Please check your inputs and equation.");
       console.error("Calculation error:", error);
@@ -107,7 +110,7 @@ const FalsePositionMethods = () => {
         </Alert>
       )}
 
-      {result !== null && (
+      {showResults && result !== null && (
         <Card>
           <CardHeader>
             <CardTitle>Result</CardTitle>
@@ -118,7 +121,7 @@ const FalsePositionMethods = () => {
         </Card>
       )}
 
-      {iterations.length > 0 && (
+      {showResults && iterations.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Equation Graph</CardTitle>
@@ -140,7 +143,7 @@ const FalsePositionMethods = () => {
         </Card>
       )}
 
-      {iterations.length > 0 && (
+      {showResults && iterations.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Error Graph</CardTitle>
@@ -160,7 +163,7 @@ const FalsePositionMethods = () => {
         </Card>
       )}
 
-      {iterations.length > 0 && (
+      {showResults && iterations.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Iteration Table</CardTitle>
