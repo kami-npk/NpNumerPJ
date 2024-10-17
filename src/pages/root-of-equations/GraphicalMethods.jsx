@@ -1,194 +1,114 @@
 import React, { useState } from 'react';
-import { evaluate, log, floor, pow, abs } from 'mathjs';
-import { Line } from "react-chartjs-2";
-import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { evaluate } from 'mathjs';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const GraphicalMethods = () => {
-  const [equation, setEquation] = useState("");
-  const [xStart, setXStart] = useState("");
-  const [xEnd, setXEnd] = useState("");
-  const [error, setError] = useState(0.000001);
-  const [x, setX] = useState(0);
-  const [iterations, setIterations] = useState([]);
-  const [errorMessage, setErrorMessage] = useState(null);
+  const [equation, setEquation] = useState("x^2 - 4");
+  const [xl, setXL] = useState("0");
+  const [xr, setXR] = useState("3");
+  const [result, setResult] = useState(null);
+  const [graphData, setGraphData] = useState([]);
 
-  const calculateStep = (xStart, xEnd) => {
-    const step = log(xEnd - xStart, 10);
-    if (step % 1 === 0) return Number(pow(10, step - 1));
-    return Number(pow(10, floor(step)));
-  };
-
-  const calculateRoot = () => {
-    setErrorMessage(null);
-    const xStartNum = parseFloat(xStart);
-    const xEndNum = parseFloat(xEnd);
-    const errorNum = parseFloat(error);
-    calGraphical(xStartNum, xEndNum, errorNum);
-  };
-
-  const calGraphical = (xStart, xEnd, error) => {
-    let temp, newTemp, x, step;
-    let iter = 0;
-    const MAX_ITER = 1000;
-    let iterationsData = [];
-
-    step = calculateStep(xStart, xEnd);
-    x = xStart;
-
-    try {
-      temp = evaluate(equation, { x: xStart });
-    } catch (error) {
-      setErrorMessage("Invalid equation");
-      console.error("Invalid equation");
-      return;
-    }
-
-    while (iter < MAX_ITER) {
-      iter++;
-
-      newTemp = evaluate(equation, { x });
-
-      iterationsData.push({
-        iteration: iter,
+  const calculateRoot = (e) => {
+    e.preventDefault();
+    const data = [];
+    for (let x = parseFloat(xl); x <= parseFloat(xr); x += 0.1) {
+      data.push({
         x: x,
-        f_x: newTemp,
-        e_r: abs(newTemp)
+        y: evaluate(equation, { x: x })
       });
-
-      if (abs(newTemp) < error) {
-        setX(x);
-        break;
-      }
-
-      if (temp * newTemp < 0) {
-        x -= step;
-        step /= 10;
-        newTemp = evaluate(equation, { x });
-      }
-
-      x += step;
-      if (x > xEnd) x = xEnd;
-
-      temp = newTemp;
     }
-
-    setIterations(iterationsData);
-  };
-
-  const chartData = {
-    labels: iterations.map((iter) => `Iter ${iter.iteration}`),
-    datasets: [
-      {
-        label: 'f(x)',
-        data: iterations.map((iter) => iter.f_x),
-        fill: false,
-        borderColor: 'rgba(75,192,192,1)',
-        tension: 0.1,
-      },
-      {
-        label: 'Error',
-        data: iterations.map((iter) => iter.e_r),
-        fill: false,
-        borderColor: 'rgba(255,99,132,1)',
-        tension: 0.1,
-      }
-    ],
+    setGraphData(data);
+    const fStart = evaluate(equation, { x: parseFloat(xl) });
+    const fEnd = evaluate(equation, { x: parseFloat(xr) });
+    if (fStart * fEnd < 0) {
+      setResult((xl + xr) / 2);
+    } else {
+      setResult(null);
+    }
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <Card>
+    <div className="container mx-auto px-4 py-8 text-white">
+      <h1 className="text-3xl font-bold mb-6">Graphical Method</h1>
+      <Card className="bg-discord-dark-secondary">
         <CardHeader>
-          <CardTitle>Graphical Method</CardTitle>
+          <CardTitle className="text-white">Input</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="space-y-4">
+          <form onSubmit={calculateRoot} className="space-y-4">
             <div>
-              <label htmlFor="equation" className="block text-sm font-medium text-gray-700">Input Equation f(x)</label>
+              <Label htmlFor="equation" className="text-white">Equation f(x)</Label>
               <Input
                 id="equation"
-                type="text"
                 value={equation}
                 onChange={(e) => setEquation(e.target.value)}
-                placeholder="Enter equation (e.g., x^2 - 4)"
+                placeholder="e.g., x^2 - 4"
+                className="bg-discord-dark-tertiary text-white"
               />
             </div>
             <div>
-              <label htmlFor="xStart" className="block text-sm font-medium text-gray-700">Input XL</label>
+              <Label htmlFor="xl" className="text-white">XL</Label>
               <Input
-                id="xStart"
+                id="xl"
                 type="number"
-                value={xStart}
-                onChange={(e) => setXStart(e.target.value)}
-                placeholder="Enter XL"
+                value={xl}
+                onChange={(e) => setXL(e.target.value)}
+                placeholder="e.g., 0"
+                className="bg-discord-dark-tertiary text-white"
               />
             </div>
             <div>
-              <label htmlFor="xEnd" className="block text-sm font-medium text-gray-700">Input XR</label>
+              <Label htmlFor="xr" className="text-white">XR</Label>
               <Input
-                id="xEnd"
+                id="xr"
                 type="number"
-                value={xEnd}
-                onChange={(e) => setXEnd(e.target.value)}
-                placeholder="Enter XR"
+                value={xr}
+                onChange={(e) => setXR(e.target.value)}
+                placeholder="e.g., 3"
+                className="bg-discord-dark-tertiary text-white"
               />
             </div>
-            <Button onClick={calculateRoot}>Solve</Button>
-          </div>
-
-          {errorMessage && (
-            <Alert variant="destructive" className="mt-4">
-              <AlertDescription>{errorMessage}</AlertDescription>
-            </Alert>
-          )}
-
-          {x !== 0 && (
-            <div className="mt-4">
-              <h3 className="text-xl font-semibold">Answer: {x.toPrecision(7)}</h3>
-            </div>
-          )}
-
-          {iterations.length > 0 && (
-            <div className="mt-6">
-              <h4 className="text-lg font-semibold mb-2">Iteration Table:</h4>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Iteration</TableHead>
-                    <TableHead>X</TableHead>
-                    <TableHead>f(X)</TableHead>
-                    <TableHead>Error</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {iterations.map((iter, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{iter.iteration}</TableCell>
-                      <TableCell>{iter.x.toFixed(6)}</TableCell>
-                      <TableCell>{iter.f_x.toFixed(6)}</TableCell>
-                      <TableCell>{iter.e_r.toFixed(6)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-
-          {iterations.length > 0 && (
-            <div className="mt-6">
-              <h4 className="text-lg font-semibold mb-2">Equation Graph:</h4>
-              <Line data={chartData} />
-            </div>
-          )}
+            <Button type="submit" className="bg-discord-brand hover:bg-discord-brand-hover">Solve</Button>
+          </form>
         </CardContent>
       </Card>
+
+      {result !== null && (
+        <Card className="mt-6 bg-discord-dark-secondary">
+          <CardHeader>
+            <CardTitle className="text-white">Result</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p className="text-white">Root approximation: {result.toPrecision(7)}</p>
+          </CardContent>
+        </Card>
+      )}
+
+      {graphData.length > 0 && (
+        <Card className="mt-6 bg-discord-dark-secondary">
+          <CardHeader>
+            <CardTitle className="text-white">Equation Graph</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={graphData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="x" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="y" stroke="#8884d8" activeDot={{ r: 8 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };

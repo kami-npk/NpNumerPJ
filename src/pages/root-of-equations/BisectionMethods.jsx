@@ -48,83 +48,86 @@ const BisectionMethods = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 text-white">
       <h1 className="text-3xl font-bold mb-6">Bisection Method</h1>
-      <Card>
+      <Card className="bg-discord-dark-secondary">
         <CardHeader>
-          <CardTitle>Input</CardTitle>
+          <CardTitle className="text-white">Input</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={calculateBisection} className="space-y-4">
             <div>
-              <Label htmlFor="equation">Equation f(x)</Label>
+              <Label htmlFor="equation" className="text-white">Equation f(x)</Label>
               <Input
                 id="equation"
                 value={equation}
                 onChange={(e) => setEquation(e.target.value)}
                 placeholder="e.g., x^2 - 4"
+                className="bg-discord-dark-tertiary text-white"
               />
             </div>
             <div>
-              <Label htmlFor="xl">XL</Label>
+              <Label htmlFor="xl" className="text-white">XL</Label>
               <Input
                 id="xl"
                 type="number"
                 value={xl}
                 onChange={(e) => setXL(e.target.value)}
                 placeholder="e.g., 0"
+                className="bg-discord-dark-tertiary text-white"
               />
             </div>
             <div>
-              <Label htmlFor="xr">XR</Label>
+              <Label htmlFor="xr" className="text-white">XR</Label>
               <Input
                 id="xr"
                 type="number"
                 value={xr}
                 onChange={(e) => setXR(e.target.value)}
                 placeholder="e.g., 3"
+                className="bg-discord-dark-tertiary text-white"
               />
             </div>
-            <Button type="submit">Solve</Button>
+            <Button type="submit" className="bg-discord-brand hover:bg-discord-brand-hover">Solve</Button>
           </form>
         </CardContent>
       </Card>
 
       {result !== null && (
-        <Card className="mt-6">
+        <Card className="mt-6 bg-discord-dark-secondary">
           <CardHeader>
-            <CardTitle>Result</CardTitle>
+            <CardTitle className="text-white">Result</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Root approximation: {result.toPrecision(7)}</p>
+            <p className="text-white">Root approximation: {result.toPrecision(7)}</p>
           </CardContent>
         </Card>
       )}
 
       {iterations.length > 0 && (
-        <Card className="mt-6">
+        <Card className="mt-6 bg-discord-dark-secondary">
           <CardHeader>
-            <CardTitle>Iterations</CardTitle>
+            <CardTitle className="text-white">Iterations</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Iteration</TableHead>
-                  <TableHead>XL</TableHead>
-                  <TableHead>XM</TableHead>
-                  <TableHead>XR</TableHead>
-                  <TableHead>Error (%)</TableHead>
+                  <TableHead className="text-white">Iteration</TableHead>
+                  <TableHead className="text-white">XL</TableHead>
+                  <TableHead className="text-white">XM</TableHead>
+                  <TableHead className="text-white">XR</TableHead>
+                  <TableHead className="text-white">Error (%)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {iterations.map((row, index) => (
                   <TableRow key={index}>
-                    <TableCell>{row.iteration}</TableCell>
-                    <TableCell>{row.xl.toPrecision(7)}</TableCell>
-                    <TableCell>{row.xm.toPrecision(7)}</TableCell>
-                    <TableCell>{row.xr.toPrecision(7)}</TableCell>
-                    <TableCell>{row.error.toPrecision(7)}</TableCell>
+                    <TableCell className="text-white">{row.iteration}</TableCell>
+                    <TableCell className="text-white">{row.xl.toPrecision(7)}</TableCell>
+                    <TableCell className="text-white">{row.xm.toPrecision(7)}</TableCell>
+                    <TableCell className="text-white">{row.xr.toPrecision(7)}</TableCell>
+                    <TableCell className="text-white">{row.error.toPrecision(7)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -134,9 +137,9 @@ const BisectionMethods = () => {
       )}
 
       {iterations.length > 0 && (
-        <Card className="mt-6">
+        <Card className="mt-6 bg-discord-dark-secondary">
           <CardHeader>
-            <CardTitle>Error Graph</CardTitle>
+            <CardTitle className="text-white">Error Graph</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
