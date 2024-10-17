@@ -11,29 +11,41 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const GraphicalMethods = () => {
-  const [equation, setEquation] = useState("");
-  const [x, setX] = useState(0);
-  const [xStart, setXStart] = useState(0);
-  const [xEnd, setXEnd] = useState(0);
-  const [error, setError] = useState(0.000001);
+  const [Equation, setEquation] = useState("");
+  const [X, setX] = useState(0);
+  const [Xstart, setXstart] = useState(0);
+  const [Xend, setXend] = useState(0);
+  const [Error, setError] = useState(0.000001);
   const [iterations, setIterations] = useState([]);
   const [errorMessage, setErrorMessage] = useState(null);
 
-  const calculateStep = (xStart, xEnd) => {
-    const step = log(xEnd - xStart, 10);
-    if (step % 1 === 0) return Number(pow(10, step - 1));
-    return Number(pow(10, floor(step)));
+  const inputEquation = (event) => {
+    setEquation(event.target.value);
+  };
+
+  const inputXstart = (event) => {
+    setXstart(event.target.value);
+  };
+
+  const inputXend = (event) => {
+    setXend(event.target.value);
   };
 
   const calculateRoot = () => {
-    setErrorMessage(null);
-    const xStartNum = parseFloat(xStart);
-    const xEndNum = parseFloat(xEnd);
-    const errorNum = parseFloat(error);
-    calGraphical(xStartNum, xEndNum, errorNum);
+    setErrorMessage(null); 
+    const xstartnum = parseFloat(Xstart);
+    const xendnum = parseFloat(Xend);
+    const errornum = parseFloat(Error);
+    CalGraphical(xstartnum, xendnum, errornum);
   };
 
-  const calGraphical = (xStart, xEnd, error) => {
+  function calculateStep(xStart, xEnd) {
+    const step = log(xEnd - xStart, 10);
+    if (step % 1 === 0) return Number(pow(10, step - 1));
+    return Number(pow(10, floor(step)));
+  }
+
+  function CalGraphical(xStart, xEnd, error) {
     let temp, newTemp, x, step;
     let iter = 0;
     const MAX_ITER = 1000;
@@ -43,7 +55,7 @@ const GraphicalMethods = () => {
     x = xStart;
 
     try {
-      temp = evaluate(equation, { x: xStart });
+      temp = evaluate(Equation, { x: xStart });
     } catch (error) {
       setErrorMessage("Invalid equation");
       console.error("Invalid equation");
@@ -53,7 +65,7 @@ const GraphicalMethods = () => {
     while (iter < MAX_ITER) {
       iter++;
 
-      newTemp = evaluate(equation, { x });
+      newTemp = evaluate(Equation, { x });
 
       iterationsData.push({
         iteration: iter,
@@ -70,7 +82,7 @@ const GraphicalMethods = () => {
       if (temp * newTemp < 0) {
         x -= step;
         step /= 10;
-        newTemp = evaluate(equation, { x });
+        newTemp = evaluate(Equation, { x });
       }
 
       x += step;
@@ -79,8 +91,8 @@ const GraphicalMethods = () => {
       temp = newTemp;
     }
 
-    setIterations(iterationsData);
-  };
+    setIterations(iterationsData); 
+  }
 
   const chartData = {
     labels: iterations.map((iter) => `Iter ${iter.iteration}`),
@@ -88,12 +100,14 @@ const GraphicalMethods = () => {
       {
         label: 'f(x)',
         data: iterations.map((iter) => iter.f_x),
+        fill: false,
         borderColor: 'rgba(75,192,192,1)',
         tension: 0.1,
       },
       {
         label: 'Error',
         data: iterations.map((iter) => iter.e_r),
+        fill: false,
         borderColor: 'rgba(255,99,132,1)',
         tension: 0.1,
       }
@@ -110,18 +124,21 @@ const GraphicalMethods = () => {
           <div className="space-y-4">
             <Input
               type="text"
-              value={equation}
-              onChange={(e) => setEquation(e.target.value)}
+              id="equation"
+              value={Equation}
+              onChange={inputEquation}
               placeholder="Enter equation (f(x))"
             />
             <Input
               type="number"
-              onChange={(e) => setXStart(e.target.value)}
+              id="Xstart"
+              onChange={inputXstart}
               placeholder="Input Xstart"
             />
             <Input
               type="number"
-              onChange={(e) => setXEnd(e.target.value)}
+              id="Xend"
+              onChange={inputXend}
               placeholder="Input Xend"
             />
             <Button onClick={calculateRoot}>Calculate</Button>
@@ -134,7 +151,7 @@ const GraphicalMethods = () => {
             </Alert>
           )}
 
-          <h3 className="mt-4 text-xl font-semibold">Answer: {x.toPrecision(7)}</h3>
+          <h3 className="mt-4 text-xl font-semibold">Answer: {X.toPrecision(7)}</h3>
 
           {iterations.length > 0 && (
             <div className="mt-6">
