@@ -11,8 +11,10 @@ const BisectionMethods = () => {
   const [equation, setEquation] = useState("x^2 - 4");
   const [xl, setXL] = useState("0");
   const [xr, setXR] = useState("3");
-  const [iterations, setIterations] = useState([]);
   const [result, setResult] = useState(null);
+  const [iterations, setIterations] = useState([]);
+  const [graphData, setGraphData] = useState([]);
+  const [errorData, setErrorData] = useState([]);
 
   const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
@@ -23,6 +25,7 @@ const BisectionMethods = () => {
     const MAX_ITER = 50;
     const EPSILON = 0.000001;
     const newIterations = [];
+    const newErrorData = [];
     let xlNum = parseFloat(xl);
     let xrNum = parseFloat(xr);
 
@@ -35,16 +38,30 @@ const BisectionMethods = () => {
       if (fXm * fXr > 0) {
         ea = error(xrNum, xm);
         newIterations.push({ iteration: iter, xl: xlNum, xm, xr: xrNum, error: ea });
+        newErrorData.push({ iteration: iter, error: ea });
         xrNum = xm;
       } else if (fXm * fXr < 0) {
         ea = error(xlNum, xm);
         newIterations.push({ iteration: iter, xl: xlNum, xm, xr: xrNum, error: ea });
+        newErrorData.push({ iteration: iter, error: ea });
         xlNum = xm;
       }
     } while (ea > EPSILON && iter < MAX_ITER);
 
     setResult(xm);
     setIterations(newIterations);
+    setErrorData(newErrorData);
+
+    // Generate equation graph data
+    const graphData = [];
+    const step = (parseFloat(xr) - parseFloat(xl)) / 100;
+    for (let x = parseFloat(xl); x <= parseFloat(xr); x += step) {
+      graphData.push({
+        x: x,
+        y: evaluate(equation, { x: x })
+      });
+    }
+    setGraphData(graphData);
   };
 
   return (
@@ -104,6 +121,46 @@ const BisectionMethods = () => {
         </Card>
       )}
 
+      {graphData.length > 0 && (
+        <Card className="mt-6 bg-discord-dark-secondary">
+          <CardHeader>
+            <CardTitle className="text-white">Equation Graph</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={graphData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="x" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="y" stroke="#8884d8" activeDot={{ r: 8 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {errorData.length > 0 && (
+        <Card className="mt-6 bg-discord-dark-secondary">
+          <CardHeader>
+            <CardTitle className="text-white">Error Graph</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={errorData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="iteration" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="error" stroke="#82ca9d" activeDot={{ r: 8 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
       {iterations.length > 0 && (
         <Card className="mt-6 bg-discord-dark-secondary">
           <CardHeader>
@@ -132,26 +189,6 @@ const BisectionMethods = () => {
                 ))}
               </TableBody>
             </Table>
-          </CardContent>
-        </Card>
-      )}
-
-      {iterations.length > 0 && (
-        <Card className="mt-6 bg-discord-dark-secondary">
-          <CardHeader>
-            <CardTitle className="text-white">Error Graph</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={iterations}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="iteration" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="error" stroke="#8884d8" activeDot={{ r: 8 }} />
-              </LineChart>
-            </ResponsiveContainer>
           </CardContent>
         </Card>
       )}

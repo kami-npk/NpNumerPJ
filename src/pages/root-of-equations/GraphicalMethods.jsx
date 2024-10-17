@@ -13,24 +13,46 @@ const GraphicalMethods = () => {
   const [xr, setXR] = useState("3");
   const [result, setResult] = useState(null);
   const [graphData, setGraphData] = useState([]);
+  const [iterations, setIterations] = useState([]);
+  const [errorData, setErrorData] = useState([]);
 
   const calculateRoot = (e) => {
     e.preventDefault();
     const data = [];
-    for (let x = parseFloat(xl); x <= parseFloat(xr); x += 0.1) {
-      data.push({
-        x: x,
-        y: evaluate(equation, { x: x })
-      });
+    const iterData = [];
+    const errData = [];
+    let x = parseFloat(xl);
+    const xrNum = parseFloat(xr);
+    const step = (xrNum - x) / 100;
+    let prevY = evaluate(equation, { x });
+    let iteration = 0;
+
+    while (x <= xrNum) {
+      const y = evaluate(equation, { x });
+      data.push({ x, y });
+
+      if (prevY * y < 0) {
+        const xm = (x + (x - step)) / 2;
+        const ym = evaluate(equation, { x: xm });
+        const error = Math.abs((xm - (x - step)) / xm) * 100;
+
+        iterData.push({ iteration: ++iteration, x: xm, y: ym, error });
+        errData.push({ iteration, error });
+
+        if (Math.abs(ym) < 0.0001) {
+          setResult(xm);
+          break;
+        }
+      }
+
+      prevY = y;
+      x += step;
     }
+
     setGraphData(data);
-    const fStart = evaluate(equation, { x: parseFloat(xl) });
-    const fEnd = evaluate(equation, { x: parseFloat(xr) });
-    if (fStart * fEnd < 0) {
-      setResult((xl + xr) / 2);
-    } else {
-      setResult(null);
-    }
+    setIterations(iterData);
+    setErrorData(errData);
+    if (!result) setResult((parseFloat(xl) + parseFloat(xr)) / 2);
   };
 
   return (
@@ -106,6 +128,56 @@ const GraphicalMethods = () => {
                 <Line type="monotone" dataKey="y" stroke="#8884d8" activeDot={{ r: 8 }} />
               </LineChart>
             </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {errorData.length > 0 && (
+        <Card className="mt-6 bg-discord-dark-secondary">
+          <CardHeader>
+            <CardTitle className="text-white">Error Graph</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={300}>
+              <LineChart data={errorData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="iteration" />
+                <YAxis />
+                <Tooltip />
+                <Legend />
+                <Line type="monotone" dataKey="error" stroke="#82ca9d" activeDot={{ r: 8 }} />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+      )}
+
+      {iterations.length > 0 && (
+        <Card className="mt-6 bg-discord-dark-secondary">
+          <CardHeader>
+            <CardTitle className="text-white">Iteration Table</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="text-white">Iteration</TableHead>
+                  <TableHead className="text-white">X</TableHead>
+                  <TableHead className="text-white">Y</TableHead>
+                  <TableHead className="text-white">Error (%)</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {iterations.map((row, index) => (
+                  <TableRow key={index}>
+                    <TableCell className="text-white">{row.iteration}</TableCell>
+                    <TableCell className="text-white">{row.x.toPrecision(7)}</TableCell>
+                    <TableCell className="text-white">{row.y.toPrecision(7)}</TableCell>
+                    <TableCell className="text-white">{row.error.toPrecision(7)}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </CardContent>
         </Card>
       )}
