@@ -1,7 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { NavigationMenu, NavigationMenuContent, NavigationMenuItem, NavigationMenuLink, NavigationMenuList, NavigationMenuTrigger } from "@/components/ui/navigation-menu";
-import { navItems } from '../nav-items';
 
 const Navbar = () => {
   return (
@@ -12,46 +10,6 @@ const Navbar = () => {
             <Link to="/" className="flex-shrink-0 flex items-center pl-0">
               <span className="text-xl font-bold text-discord-interactive-active">Home</span>
             </Link>
-          </div>
-          <div className="flex items-center">
-            <NavigationMenu>
-              <NavigationMenuList>
-                {navItems.slice(1).map((item) => (
-                  <NavigationMenuItem key={item.to}>
-                    {item.subItems ? (
-                      <>
-                        <NavigationMenuTrigger className="text-discord-interactive-normal hover:text-discord-interactive-hover">{item.title}</NavigationMenuTrigger>
-                        <NavigationMenuContent>
-                          <ul className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px] bg-discord-dark-primary">
-                            {item.subItems.map((subItem) => (
-                              <li key={subItem.to}>
-                                <NavigationMenuLink asChild>
-                                  <Link
-                                    to={subItem.to}
-                                    className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-discord-channeltextarea-background hover:text-discord-interactive-active focus:bg-discord-channeltextarea-background focus:text-discord-interactive-active"
-                                  >
-                                    <div className="text-sm font-medium leading-none">{subItem.title}</div>
-                                  </Link>
-                                </NavigationMenuLink>
-                              </li>
-                            ))}
-                          </ul>
-                        </NavigationMenuContent>
-                      </>
-                    ) : (
-                      <NavigationMenuLink asChild>
-                        <Link
-                          to={item.to}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-discord-channeltextarea-background hover:text-discord-interactive-active focus:bg-discord-channeltextarea-background focus:text-discord-interactive-active"
-                        >
-                          {item.title}
-                        </Link>
-                      </NavigationMenuLink>
-                    )}
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
           </div>
         </div>
       </div>
