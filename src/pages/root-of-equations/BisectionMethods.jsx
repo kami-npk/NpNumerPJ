@@ -31,8 +31,8 @@ const BisectionMethods = () => {
 
     do {
       xm = (xlNum + xrNum) / 2.0;
-      fXr = evaluate(equation, { x: xrNum });
-      fXm = evaluate(equation, { x: xm });
+      fXr = evaluate(equation.replace(/−/g, '-'), { x: xrNum });
+      fXm = evaluate(equation.replace(/−/g, '-'), { x: xm });
 
       iter++;
       if (fXm * fXr > 0) {
@@ -58,7 +58,7 @@ const BisectionMethods = () => {
     for (let x = parseFloat(xl); x <= parseFloat(xr); x += step) {
       graphData.push({
         x: x,
-        y: evaluate(equation, { x: x })
+        y: evaluate(equation.replace(/−/g, '-'), { x: x })
       });
     }
     setGraphData(graphData);
@@ -194,6 +194,7 @@ const BisectionMethods = () => {
       )}
     </div>
   );
+
 };
 
 export default BisectionMethods;

@@ -11,27 +11,25 @@ import { PlaceholderComponent } from "./nav-items";
 const queryClient = new QueryClient();
 
 const App = () => (
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            {navItems.map(({ to, page }) => (
-              <Route key={to} path={to} element={page} />
-            ))}
-            {navItems.flatMap(item => 
-              item.subItems ? item.subItems.map(subItem => (
-                <Route key={subItem.to} path={subItem.to} element={subItem.page} />
-              )) : []
-            )}
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
-    </QueryClientProvider>
-  </React.StrictMode>
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Home />} />
+          {navItems.map(({ to, page }) => (
+            <Route key={to} path={to} element={page} />
+          ))}
+          {navItems.flatMap(item => 
+            item.subItems ? item.subItems.map(subItem => (
+              <Route key={subItem.to} path={subItem.to} element={subItem.page} />
+            )) : []
+          )}
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
 );
 
 export default App;

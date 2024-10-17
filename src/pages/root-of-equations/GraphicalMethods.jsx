@@ -24,16 +24,16 @@ const GraphicalMethods = () => {
     let x = parseFloat(xl);
     const xrNum = parseFloat(xr);
     const step = (xrNum - x) / 100;
-    let prevY = evaluate(equation, { x });
+    let prevY = evaluate(equation.replace(/−/g, '-'), { x });
     let iteration = 0;
 
     while (x <= xrNum) {
-      const y = evaluate(equation, { x });
+      const y = evaluate(equation.replace(/−/g, '-'), { x });
       data.push({ x, y });
 
       if (prevY * y < 0) {
         const xm = (x + (x - step)) / 2;
-        const ym = evaluate(equation, { x: xm });
+        const ym = evaluate(equation.replace(/−/g, '-'), { x: xm });
         const error = Math.abs((xm - (x - step)) / xm) * 100;
 
         iterData.push({ iteration: ++iteration, x: xm, y: ym, error });
@@ -183,6 +183,7 @@ const GraphicalMethods = () => {
       )}
     </div>
   );
+
 };
 
 export default GraphicalMethods;
