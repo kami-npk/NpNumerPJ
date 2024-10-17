@@ -28,14 +28,14 @@ const Home = () => {
                 </CardHeader>
               </Card>
             </PopoverTrigger>
-            <PopoverContent className="w-64 bg-discord-dark-tertiary border-discord-dark-secondary">
-              <div className="grid gap-4">
-                <h4 className="font-medium leading-none text-discord-interactive-active">{section.title}</h4>
+            <PopoverContent className="w-64 bg-discord-dark-tertiary border-discord-dark-secondary p-0">
+              <div className="py-2">
+                <h4 className="font-medium leading-none text-discord-interactive-active px-4 py-2 text-lg">{section.title}</h4>
                 {section.subItems.map((subItem) => (
                   <Button
                     key={subItem.to}
                     variant="ghost"
-                    className="justify-start text-discord-text-normal hover:text-discord-interactive-active"
+                    className="w-full justify-start text-discord-text-normal hover:text-discord-interactive-active hover:bg-discord-dark-secondary px-4 py-2 text-sm"
                     onClick={() => navigate(subItem.to)}
                   >
                     {subItem.title}
