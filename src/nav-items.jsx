@@ -1,5 +1,6 @@
 import React from 'react';
 import { FunctionSquareIcon, GridIcon, TrendingUpIcon, ArrowRightLeftIcon, PercentIcon, DivideIcon } from "lucide-react";
+import GraphicalMethods from "./pages/root-of-equations/GraphicalMethods";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -16,12 +17,12 @@ export const navItems = [
     page: <PlaceholderComponent title="Root of Equations" />,
     description: "Methods for finding roots of equations",
     subItems: [
-      { title: "Graphical Methods", to: "/root-of-equations/graphical" },
-      { title: "Bisection Search", to: "/root-of-equations/bisection" },
-      { title: "False-position Methods", to: "/root-of-equations/false-position" },
-      { title: "One-point Iteration Methods", to: "/root-of-equations/one-point-iteration" },
-      { title: "Newton-Raphson Methods", to: "/root-of-equations/newton-raphson" },
-      { title: "Secant Methods", to: "/root-of-equations/secant" },
+      { title: "Graphical Methods", to: "/root-of-equations/graphical", page: <GraphicalMethods /> },
+      { title: "Bisection Search", to: "/root-of-equations/bisection", page: <PlaceholderComponent title="Bisection Search" /> },
+      { title: "False-position Methods", to: "/root-of-equations/false-position", page: <PlaceholderComponent title="False-position Methods" /> },
+      { title: "One-point Iteration Methods", to: "/root-of-equations/one-point-iteration", page: <PlaceholderComponent title="One-point Iteration Methods" /> },
+      { title: "Newton-Raphson Methods", to: "/root-of-equations/newton-raphson", page: <PlaceholderComponent title="Newton-Raphson Methods" /> },
+      { title: "Secant Methods", to: "/root-of-equations/secant", page: <PlaceholderComponent title="Secant Methods" /> },
     ],
   },
   {
@@ -31,13 +32,13 @@ export const navItems = [
     page: <PlaceholderComponent title="Linear Algebra Equations" />,
     description: "Techniques for solving systems of linear equations",
     subItems: [
-      { title: "Cramer's Rule", to: "/linear-algebra/cramers-rule" },
-      { title: "Gauss Elimination Methods", to: "/linear-algebra/gauss-elimination" },
-      { title: "Gauss Jordan Methods", to: "/linear-algebra/gauss-jordan" },
-      { title: "Matrix Inversion", to: "/linear-algebra/matrix-inversion" },
-      { title: "LU Decomposition Method", to: "/linear-algebra/lu-decomposition" },
-      { title: "Jacobi Iteration Method", to: "/linear-algebra/jacobi-iteration" },
-      { title: "Conjugate Gradient Method", to: "/linear-algebra/conjugate-gradient" },
+      { title: "Cramer's Rule", to: "/linear-algebra/cramers-rule", page: <PlaceholderComponent title="Cramer's Rule" /> },
+      { title: "Gauss Elimination Methods", to: "/linear-algebra/gauss-elimination", page: <PlaceholderComponent title="Gauss Elimination Methods" /> },
+      { title: "Gauss Jordan Methods", to: "/linear-algebra/gauss-jordan", page: <PlaceholderComponent title="Gauss Jordan Methods" /> },
+      { title: "Matrix Inversion", to: "/linear-algebra/matrix-inversion", page: <PlaceholderComponent title="Matrix Inversion" /> },
+      { title: "LU Decomposition Method", to: "/linear-algebra/lu-decomposition", page: <PlaceholderComponent title="LU Decomposition Method" /> },
+      { title: "Jacobi Iteration Method", to: "/linear-algebra/jacobi-iteration", page: <PlaceholderComponent title="Jacobi Iteration Method" /> },
+      { title: "Conjugate Gradient Method", to: "/linear-algebra/conjugate-gradient", page: <PlaceholderComponent title="Conjugate Gradient Method" /> },
     ],
   },
   {
@@ -47,9 +48,9 @@ export const navItems = [
     page: <PlaceholderComponent title="Interpolation Equations" />,
     description: "Methods for estimating values between known data points",
     subItems: [
-      { title: "Newton's Divided Difference", to: "/interpolation/newtons-divided-difference" },
-      { title: "Lagrange Interpolation", to: "/interpolation/lagrange" },
-      { title: "Spline Interpolation", to: "/interpolation/spline" },
+      { title: "Newton's Divided Difference", to: "/interpolation/newtons-divided-difference", page: <PlaceholderComponent title="Newton's Divided Difference" /> },
+      { title: "Lagrange Interpolation", to: "/interpolation/lagrange", page: <PlaceholderComponent title="Lagrange Interpolation" /> },
+      { title: "Spline Interpolation", to: "/interpolation/spline", page: <PlaceholderComponent title="Spline Interpolation" /> },
     ],
   },
   {
@@ -59,8 +60,8 @@ export const navItems = [
     page: <PlaceholderComponent title="Extrapolation Equations" />,
     description: "Techniques for estimating values beyond known data points",
     subItems: [
-      { title: "Simple Regression Extrapolation", to: "/extrapolation/simple-regression" },
-      { title: "Multiple Regression Extrapolation", to: "/extrapolation/multiple-regression" },
+      { title: "Simple Regression Extrapolation", to: "/extrapolation/simple-regression", page: <PlaceholderComponent title="Simple Regression Extrapolation" /> },
+      { title: "Multiple Regression Extrapolation", to: "/extrapolation/multiple-regression", page: <PlaceholderComponent title="Multiple Regression Extrapolation" /> },
     ],
   },
   {
@@ -70,10 +71,10 @@ export const navItems = [
     page: <PlaceholderComponent title="Integration Equations" />,
     description: "Methods for numerical integration",
     subItems: [
-      { title: "Single Trapezoidal Rule", to: "/integration/single-trapezoidal" },
-      { title: "Composite Trapezoidal Rule", to: "/integration/composite-trapezoidal" },
-      { title: "Single Simpson's Rule", to: "/integration/single-simpson" },
-      { title: "Composite Simpson's Rule", to: "/integration/composite-simpson" },
+      { title: "Single Trapezoidal Rule", to: "/integration/single-trapezoidal", page: <PlaceholderComponent title="Single Trapezoidal Rule" /> },
+      { title: "Composite Trapezoidal Rule", to: "/integration/composite-trapezoidal", page: <PlaceholderComponent title="Composite Trapezoidal Rule" /> },
+      { title: "Single Simpson's Rule", to: "/integration/single-simpson", page: <PlaceholderComponent title="Single Simpson's Rule" /> },
+      { title: "Composite Simpson's Rule", to: "/integration/composite-simpson", page: <PlaceholderComponent title="Composite Simpson's Rule" /> },
     ],
   },
   {
@@ -83,7 +84,7 @@ export const navItems = [
     page: <PlaceholderComponent title="Differential Equations" />,
     description: "Techniques for solving differential equations numerically",
     subItems: [
-      { title: "Numerical Differentiation", to: "/differential/numerical-differentiation" },
+      { title: "Numerical Differentiation", to: "/differential/numerical-differentiation", page: <PlaceholderComponent title="Numerical Differentiation" /> },
     ],
   },
 ];

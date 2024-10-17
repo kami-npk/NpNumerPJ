@@ -6,17 +6,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 const GraphicalMethods = () => {
-  const [equation, setEquation] = useState("43x-1");
-  const [xl, setXL] = useState("0");
-  const [xr, setXR] = useState("10");
+  const [equation, setEquation] = useState("");
+  const [xStart, setXStart] = useState("");
+  const [xEnd, setXEnd] = useState("");
   const [error, setError] = useState(0.000001);
+  const [x, setX] = useState(0);
   const [iterations, setIterations] = useState([]);
-  const [result, setResult] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
 
   const calculateStep = (xStart, xEnd) => {
@@ -27,10 +27,10 @@ const GraphicalMethods = () => {
 
   const calculateRoot = () => {
     setErrorMessage(null);
-    const xlNum = parseFloat(xl);
-    const xrNum = parseFloat(xr);
+    const xStartNum = parseFloat(xStart);
+    const xEndNum = parseFloat(xEnd);
     const errorNum = parseFloat(error);
-    calGraphical(xlNum, xrNum, errorNum);
+    calGraphical(xStartNum, xEndNum, errorNum);
   };
 
   const calGraphical = (xStart, xEnd, error) => {
@@ -59,10 +59,11 @@ const GraphicalMethods = () => {
         iteration: iter,
         x: x,
         f_x: newTemp,
+        e_r: abs(newTemp)
       });
 
       if (abs(newTemp) < error) {
-        setResult(x);
+        setX(x);
         break;
       }
 
@@ -91,6 +92,13 @@ const GraphicalMethods = () => {
         borderColor: 'rgba(75,192,192,1)',
         tension: 0.1,
       },
+      {
+        label: 'Error',
+        data: iterations.map((iter) => iter.e_r),
+        fill: false,
+        borderColor: 'rgba(255,99,132,1)',
+        tension: 0.1,
+      }
     ],
   };
 
@@ -109,27 +117,26 @@ const GraphicalMethods = () => {
                 type="text"
                 value={equation}
                 onChange={(e) => setEquation(e.target.value)}
-                placeholder="Enter equation (e.g., 43x-1)"
+                placeholder="Enter equation (e.g., x^2 - 4)"
               />
-              <p className="mt-1 text-sm text-gray-500">Ensure proper arithmetic syntax.</p>
             </div>
             <div>
-              <label htmlFor="xl" className="block text-sm font-medium text-gray-700">Input XL</label>
+              <label htmlFor="xStart" className="block text-sm font-medium text-gray-700">Input XL</label>
               <Input
-                id="xl"
+                id="xStart"
                 type="number"
-                value={xl}
-                onChange={(e) => setXL(e.target.value)}
+                value={xStart}
+                onChange={(e) => setXStart(e.target.value)}
                 placeholder="Enter XL"
               />
             </div>
             <div>
-              <label htmlFor="xr" className="block text-sm font-medium text-gray-700">Input XR</label>
+              <label htmlFor="xEnd" className="block text-sm font-medium text-gray-700">Input XR</label>
               <Input
-                id="xr"
+                id="xEnd"
                 type="number"
-                value={xr}
-                onChange={(e) => setXR(e.target.value)}
+                value={xEnd}
+                onChange={(e) => setXEnd(e.target.value)}
                 placeholder="Enter XR"
               />
             </div>
@@ -138,14 +145,13 @@ const GraphicalMethods = () => {
 
           {errorMessage && (
             <Alert variant="destructive" className="mt-4">
-              <AlertTitle>Error</AlertTitle>
               <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
 
-          {result !== null && (
+          {x !== 0 && (
             <div className="mt-4">
-              <h3 className="text-xl font-semibold">Answer: {result.toPrecision(16)}</h3>
+              <h3 className="text-xl font-semibold">Answer: {x.toPrecision(7)}</h3>
             </div>
           )}
 
@@ -156,16 +162,18 @@ const GraphicalMethods = () => {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Iteration</TableHead>
-                    <TableHead>x</TableHead>
-                    <TableHead>f(x)</TableHead>
+                    <TableHead>X</TableHead>
+                    <TableHead>f(X)</TableHead>
+                    <TableHead>Error</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {iterations.map((iter, index) => (
                     <TableRow key={index}>
                       <TableCell>{iter.iteration}</TableCell>
-                      <TableCell>{iter.x.toFixed(11)}</TableCell>
+                      <TableCell>{iter.x.toFixed(6)}</TableCell>
                       <TableCell>{iter.f_x.toFixed(6)}</TableCell>
+                      <TableCell>{iter.e_r.toFixed(6)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
