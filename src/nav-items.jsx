@@ -2,7 +2,7 @@ import React from 'react';
 import { FunctionSquareIcon, GridIcon, TrendingUpIcon, ArrowRightLeftIcon, PercentIcon, DivideIcon } from "lucide-react";
 
 // Placeholder component for missing pages
-const PlaceholderComponent = ({ title }) => (
+export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
     <h1 className="text-2xl font-bold mb-4">{title}</h1>
     <p>This is a placeholder for the {title} page.</p>

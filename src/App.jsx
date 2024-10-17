@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { navItems } from "./nav-items";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
+import { PlaceholderComponent } from "./nav-items"; // Import PlaceholderComponent
 
 const queryClient = new QueryClient();
 
