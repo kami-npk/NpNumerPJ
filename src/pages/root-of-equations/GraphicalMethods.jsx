@@ -12,110 +12,107 @@ const GraphicalMethods = () => {
   const [xl, setXL] = useState("0");
   const [xr, setXR] = useState("3");
   const [result, setResult] = useState(null);
+  const [iterationData, setIterationData] = useState([]);
   const [graphData, setGraphData] = useState([]);
-  const [iterations, setIterations] = useState([]);
   const [errorData, setErrorData] = useState([]);
 
   const calculateRoot = (e) => {
     e.preventDefault();
-    const data = [];
-    const iterData = [];
-    const errData = [];
-    let x = parseFloat(xl);
+    const xlNum = parseFloat(xl);
     const xrNum = parseFloat(xr);
-    const step = (xrNum - x) / 100;
-    let prevY = evaluate(equation.replace(/−/g, '-'), { x });
-    let iteration = 0;
+    const step = 0.01;
+    const newIterationData = [];
+    const newGraphData = [];
+    const newErrorData = [];
+    let root = null;
 
-    while (x <= xrNum) {
+    for (let x = xlNum; x <= xrNum; x += step) {
       const y = evaluate(equation.replace(/−/g, '-'), { x });
-      data.push({ x, y });
+      newGraphData.push({ x, y });
 
-      if (prevY * y < 0) {
-        const xm = (x + (x - step)) / 2;
-        const ym = evaluate(equation.replace(/−/g, '-'), { x: xm });
-        const error = Math.abs((xm - (x - step)) / xm) * 100;
+      if (Math.abs(y) < 0.001 && root === null) {
+        root = x;
+      }
 
-        iterData.push({ iteration: ++iteration, x: xm, y: ym, error });
-        errData.push({ iteration, error });
-
-        if (Math.abs(ym) < 0.0001) {
-          setResult(xm);
-          break;
+      if (newIterationData.length > 0) {
+        const prevY = newIterationData[newIterationData.length - 1].y;
+        if (y * prevY < 0) {
+          const xm = (x + newIterationData[newIterationData.length - 1].x) / 2;
+          const ym = evaluate(equation.replace(/−/g, '-'), { x: xm });
+          const error = Math.abs((xm - x) / xm) * 100;
+          newIterationData.push({ iteration: newIterationData.length + 1, x: xm, y: ym, error });
+          newErrorData.push({ iteration: newIterationData.length, error });
         }
       }
 
-      prevY = y;
-      x += step;
+      newIterationData.push({ iteration: newIterationData.length + 1, x, y, error: 0 });
     }
 
-    setGraphData(data);
-    setIterations(iterData);
-    setErrorData(errData);
-    if (!result) setResult((parseFloat(xl) + parseFloat(xr)) / 2);
+    setResult(root);
+    setIterationData(newIterationData);
+    setGraphData(newGraphData);
+    setErrorData(newErrorData);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 text-white">
-      <h1 className="text-3xl font-bold mb-6">Graphical Method</h1>
-      <Card className="bg-discord-dark-secondary">
+    <div className="space-y-8">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-white">Input</CardTitle>
+          <CardTitle>Graphical Method</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={calculateRoot} className="space-y-4">
-            <div>
-              <Label htmlFor="equation" className="text-white">Equation f(x)</Label>
+            <div className="space-y-2">
+              <Label htmlFor="equation">Equation f(x)</Label>
               <Input
                 id="equation"
                 value={equation}
                 onChange={(e) => setEquation(e.target.value)}
                 placeholder="e.g., x^2 - 4"
-                className="bg-discord-dark-tertiary text-white"
               />
             </div>
-            <div>
-              <Label htmlFor="xl" className="text-white">XL</Label>
+            <div className="space-y-2">
+              <Label htmlFor="xl">X Left (XL)</Label>
               <Input
                 id="xl"
                 type="number"
                 value={xl}
                 onChange={(e) => setXL(e.target.value)}
                 placeholder="e.g., 0"
-                className="bg-discord-dark-tertiary text-white"
+                required
               />
             </div>
-            <div>
-              <Label htmlFor="xr" className="text-white">XR</Label>
+            <div className="space-y-2">
+              <Label htmlFor="xr">X Right (XR)</Label>
               <Input
                 id="xr"
                 type="number"
                 value={xr}
                 onChange={(e) => setXR(e.target.value)}
                 placeholder="e.g., 3"
-                className="bg-discord-dark-tertiary text-white"
+                required
               />
             </div>
-            <Button type="submit" className="bg-discord-brand hover:bg-discord-brand-hover">Solve</Button>
+            <Button type="submit">Calculate</Button>
           </form>
         </CardContent>
       </Card>
 
       {result !== null && (
-        <Card className="mt-6 bg-discord-dark-secondary">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-white">Result</CardTitle>
+            <CardTitle>Result</CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-white">Root approximation: {result.toPrecision(7)}</p>
+            <p>Root approximation: {result.toPrecision(6)}</p>
           </CardContent>
         </Card>
       )}
 
       {graphData.length > 0 && (
-        <Card className="mt-6 bg-discord-dark-secondary">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-white">Equation Graph</CardTitle>
+            <CardTitle>Equation Graph</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -125,7 +122,7 @@ const GraphicalMethods = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="y" stroke="#8884d8" activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="y" stroke="#8884d8" dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -133,9 +130,9 @@ const GraphicalMethods = () => {
       )}
 
       {errorData.length > 0 && (
-        <Card className="mt-6 bg-discord-dark-secondary">
+        <Card>
           <CardHeader>
-            <CardTitle className="text-white">Error Graph</CardTitle>
+            <CardTitle>Error Graph</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -145,35 +142,35 @@ const GraphicalMethods = () => {
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="error" stroke="#82ca9d" activeDot={{ r: 8 }} />
+                <Line type="monotone" dataKey="error" stroke="#82ca9d" />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       )}
 
-      {iterations.length > 0 && (
-        <Card className="mt-6 bg-discord-dark-secondary">
+      {iterationData.length > 0 && (
+        <Card>
           <CardHeader>
-            <CardTitle className="text-white">Iteration Table</CardTitle>
+            <CardTitle>Iteration Table</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="text-white">Iteration</TableHead>
-                  <TableHead className="text-white">X</TableHead>
-                  <TableHead className="text-white">Y</TableHead>
-                  <TableHead className="text-white">Error (%)</TableHead>
+                  <TableHead>Iteration</TableHead>
+                  <TableHead>X</TableHead>
+                  <TableHead>Y</TableHead>
+                  <TableHead>Error (%)</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {iterations.map((row, index) => (
+                {iterationData.map((row, index) => (
                   <TableRow key={index}>
-                    <TableCell className="text-white">{row.iteration}</TableCell>
-                    <TableCell className="text-white">{row.x.toPrecision(7)}</TableCell>
-                    <TableCell className="text-white">{row.y.toPrecision(7)}</TableCell>
-                    <TableCell className="text-white">{row.error.toPrecision(7)}</TableCell>
+                    <TableCell>{row.iteration}</TableCell>
+                    <TableCell>{row.x.toPrecision(6)}</TableCell>
+                    <TableCell>{row.y.toPrecision(6)}</TableCell>
+                    <TableCell>{row.error.toPrecision(6)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -183,7 +180,6 @@ const GraphicalMethods = () => {
       )}
     </div>
   );
-
 };
 
 export default GraphicalMethods;
