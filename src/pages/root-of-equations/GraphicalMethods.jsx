@@ -78,48 +78,44 @@ const GraphicalMethods = () => {
 
   return (
     <div className="space-y-8">
-      <h1 className="text-3xl font-bold mb-6">Graphical Method</h1>
-      <Card className="bg-gray-800">
+      <Card>
         <CardHeader>
-          <CardTitle className="text-white">Input</CardTitle>
+          <CardTitle>Graphical Method</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={calculateRoot} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="equation" className="text-white">Equation f(x)</Label>
+              <Label htmlFor="equation">Equation f(x)</Label>
               <Input
                 id="equation"
                 value={equation}
                 onChange={(e) => setEquation(e.target.value)}
                 placeholder="Enter equation (e.g., x^2 - 4)"
-                className="bg-gray-700 text-white"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="xStart" className="text-white">XL</Label>
+              <Label htmlFor="xStart">X Start</Label>
               <Input
                 id="xStart"
                 type="number"
                 value={xStart}
                 onChange={(e) => setXStart(e.target.value)}
                 placeholder="Enter X start"
-                className="bg-gray-700 text-white"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="xEnd" className="text-white">XR</Label>
+              <Label htmlFor="xEnd">X End</Label>
               <Input
                 id="xEnd"
                 type="number"
                 value={xEnd}
                 onChange={(e) => setXEnd(e.target.value)}
                 placeholder="Enter X end"
-                className="bg-gray-700 text-white"
                 required
               />
             </div>
-            <Button type="submit" className="w-full">Solve</Button>
+            <Button type="submit">Calculate</Button>
           </form>
         </CardContent>
       </Card>
