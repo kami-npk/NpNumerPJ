@@ -1,7 +1,6 @@
 import React from 'react';
 import { FunctionSquareIcon, GridIcon, TrendingUpIcon, ArrowRightLeftIcon, PercentIcon, DivideIcon } from "lucide-react";
 
-// Placeholder component for missing pages
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
     <h1 className="text-2xl font-bold mb-4">{title}</h1>
@@ -13,8 +12,9 @@ export const navItems = [
   {
     title: "Root of Equations",
     to: "/root-of-equations",
-    icon: <FunctionSquareIcon className="h-4 w-4" />,
+    icon: <FunctionSquareIcon />,
     page: <PlaceholderComponent title="Root of Equations" />,
+    description: "Methods for finding roots of equations",
     subItems: [
       { title: "Graphical Methods", to: "/root-of-equations/graphical" },
       { title: "Bisection Search", to: "/root-of-equations/bisection" },
@@ -27,8 +27,9 @@ export const navItems = [
   {
     title: "Linear Algebra Equations",
     to: "/linear-algebra",
-    icon: <GridIcon className="h-4 w-4" />,
+    icon: <GridIcon />,
     page: <PlaceholderComponent title="Linear Algebra Equations" />,
+    description: "Techniques for solving systems of linear equations",
     subItems: [
       { title: "Cramer's Rule", to: "/linear-algebra/cramers-rule" },
       { title: "Gauss Elimination Methods", to: "/linear-algebra/gauss-elimination" },
@@ -42,8 +43,9 @@ export const navItems = [
   {
     title: "Interpolation Equations",
     to: "/interpolation",
-    icon: <TrendingUpIcon className="h-4 w-4" />,
+    icon: <TrendingUpIcon />,
     page: <PlaceholderComponent title="Interpolation Equations" />,
+    description: "Methods for estimating values between known data points",
     subItems: [
       { title: "Newton's Divided Difference", to: "/interpolation/newtons-divided-difference" },
       { title: "Lagrange Interpolation", to: "/interpolation/lagrange" },
@@ -53,8 +55,9 @@ export const navItems = [
   {
     title: "Extrapolation Equations",
     to: "/extrapolation",
-    icon: <ArrowRightLeftIcon className="h-4 w-4" />,
+    icon: <ArrowRightLeftIcon />,
     page: <PlaceholderComponent title="Extrapolation Equations" />,
+    description: "Techniques for estimating values beyond known data points",
     subItems: [
       { title: "Simple Regression Extrapolation", to: "/extrapolation/simple-regression" },
       { title: "Multiple Regression Extrapolation", to: "/extrapolation/multiple-regression" },
@@ -63,8 +66,9 @@ export const navItems = [
   {
     title: "Integration Equations",
     to: "/integration",
-    icon: <PercentIcon className="h-4 w-4" />,
+    icon: <PercentIcon />,
     page: <PlaceholderComponent title="Integration Equations" />,
+    description: "Methods for numerical integration",
     subItems: [
       { title: "Single Trapezoidal Rule", to: "/integration/single-trapezoidal" },
       { title: "Composite Trapezoidal Rule", to: "/integration/composite-trapezoidal" },
@@ -75,8 +79,9 @@ export const navItems = [
   {
     title: "Differential Equations",
     to: "/differential",
-    icon: <DivideIcon className="h-4 w-4" />,
+    icon: <DivideIcon />,
     page: <PlaceholderComponent title="Differential Equations" />,
+    description: "Techniques for solving differential equations numerically",
     subItems: [
       { title: "Numerical Differentiation", to: "/differential/numerical-differentiation" },
     ],
