@@ -1,6 +1,7 @@
 import React from 'react';
 import { FunctionSquareIcon, GridIcon, TrendingUpIcon, ArrowRightLeftIcon, PercentIcon, DivideIcon } from "lucide-react";
 import GraphicalMethods from "./pages/root-of-equations/GraphicalMethods";
+import BisectionMethods from "./pages/root-of-equations/BisectionMethods";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -18,7 +19,7 @@ export const navItems = [
     description: "Methods for finding roots of equations",
     subItems: [
       { title: "Graphical Methods", to: "/root-of-equations/graphical", page: <GraphicalMethods /> },
-      { title: "Bisection Search", to: "/root-of-equations/bisection", page: <PlaceholderComponent title="Bisection Search" /> },
+      { title: "Bisection Search", to: "/root-of-equations/bisection", page: <BisectionMethods /> },
       { title: "False-position Methods", to: "/root-of-equations/false-position", page: <PlaceholderComponent title="False-position Methods" /> },
       { title: "One-point Iteration Methods", to: "/root-of-equations/one-point-iteration", page: <PlaceholderComponent title="One-point Iteration Methods" /> },
       { title: "Newton-Raphson Methods", to: "/root-of-equations/newton-raphson", page: <PlaceholderComponent title="Newton-Raphson Methods" /> },
