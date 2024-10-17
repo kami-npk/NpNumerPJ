@@ -1,57 +1,79 @@
 import React, { useState } from 'react';
-import { evaluate } from 'mathjs';
+import { evaluate, log, floor, pow, abs } from 'mathjs';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const GraphicalMethods = () => {
-  const [equation, setEquation] = useState("x^2 - 4");
-  const [xl, setXL] = useState("0");
-  const [xr, setXR] = useState("3");
+  const [equation, setEquation] = useState("");
+  const [xStart, setXStart] = useState("");
+  const [xEnd, setXEnd] = useState("");
   const [result, setResult] = useState(null);
-  const [iterationData, setIterationData] = useState([]);
-  const [graphData, setGraphData] = useState([]);
-  const [errorData, setErrorData] = useState([]);
+  const [iterations, setIterations] = useState([]);
+  const [errorMessage, setErrorMessage] = useState(null);
+
+  const calculateStep = (xStart, xEnd) => {
+    const step = log(xEnd - xStart, 10);
+    return step % 1 === 0 ? Number(pow(10, step - 1)) : Number(pow(10, floor(step)));
+  };
 
   const calculateRoot = (e) => {
     e.preventDefault();
-    const xlNum = parseFloat(xl);
-    const xrNum = parseFloat(xr);
-    const step = 0.01;
-    const newIterationData = [];
-    const newGraphData = [];
-    const newErrorData = [];
-    let root = null;
+    setErrorMessage(null);
+    const xStartNum = parseFloat(xStart);
+    const xEndNum = parseFloat(xEnd);
+    const error = 0.000001;
+    
+    let temp, newTemp, x, step;
+    let iter = 0;
+    const MAX_ITER = 1000;
+    let iterationsData = [];
 
-    for (let x = xlNum; x <= xrNum; x += step) {
-      const y = evaluate(equation.replace(/−/g, '-'), { x });
-      newGraphData.push({ x, y });
+    step = calculateStep(xStartNum, xEndNum);
+    x = xStartNum;
 
-      if (Math.abs(y) < 0.001 && root === null) {
-        root = x;
-      }
-
-      if (newIterationData.length > 0) {
-        const prevY = newIterationData[newIterationData.length - 1].y;
-        if (y * prevY < 0) {
-          const xm = (x + newIterationData[newIterationData.length - 1].x) / 2;
-          const ym = evaluate(equation.replace(/−/g, '-'), { x: xm });
-          const error = Math.abs((xm - x) / xm) * 100;
-          newIterationData.push({ iteration: newIterationData.length + 1, x: xm, y: ym, error });
-          newErrorData.push({ iteration: newIterationData.length, error });
-        }
-      }
-
-      newIterationData.push({ iteration: newIterationData.length + 1, x, y, error: 0 });
+    try {
+      temp = evaluate(equation, { x: xStartNum });
+    } catch (error) {
+      setErrorMessage("Invalid equation");
+      console.error("Invalid equation");
+      return;
     }
 
-    setResult(root);
-    setIterationData(newIterationData);
-    setGraphData(newGraphData);
-    setErrorData(newErrorData);
+    while (iter < MAX_ITER) {
+      iter++;
+
+      newTemp = evaluate(equation, { x });
+
+      iterationsData.push({
+        iteration: iter,
+        x: x,
+        fx: newTemp,
+        error: abs(newTemp)
+      });
+
+      if (abs(newTemp) < error) {
+        setResult(x);
+        break;
+      }
+
+      if (temp * newTemp < 0) {
+        x -= step;
+        step /= 10;
+        newTemp = evaluate(equation, { x });
+      }
+
+      x += step;
+      if (x > xEndNum) x = xEndNum;
+
+      temp = newTemp;
+    }
+
+    setIterations(iterationsData);
   };
 
   return (
@@ -68,28 +90,28 @@ const GraphicalMethods = () => {
                 id="equation"
                 value={equation}
                 onChange={(e) => setEquation(e.target.value)}
-                placeholder="e.g., x^2 - 4"
+                placeholder="Enter equation (e.g., x^2 - 4)"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="xl">X Left (XL)</Label>
+              <Label htmlFor="xStart">X Start</Label>
               <Input
-                id="xl"
+                id="xStart"
                 type="number"
-                value={xl}
-                onChange={(e) => setXL(e.target.value)}
-                placeholder="e.g., 0"
+                value={xStart}
+                onChange={(e) => setXStart(e.target.value)}
+                placeholder="Enter X start"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="xr">X Right (XR)</Label>
+              <Label htmlFor="xEnd">X End</Label>
               <Input
-                id="xr"
+                id="xEnd"
                 type="number"
-                value={xr}
-                onChange={(e) => setXR(e.target.value)}
-                placeholder="e.g., 3"
+                value={xEnd}
+                onChange={(e) => setXEnd(e.target.value)}
+                placeholder="Enter X end"
                 required
               />
             </div>
@@ -98,45 +120,52 @@ const GraphicalMethods = () => {
         </CardContent>
       </Card>
 
+      {errorMessage && (
+        <Alert variant="destructive">
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{errorMessage}</AlertDescription>
+        </Alert>
+      )}
+
       {result !== null && (
         <Card>
           <CardHeader>
             <CardTitle>Result</CardTitle>
           </CardHeader>
           <CardContent>
-            <p>Root approximation: {result.toPrecision(6)}</p>
+            <p>Root approximation: {result.toPrecision(7)}</p>
           </CardContent>
         </Card>
       )}
 
-      {graphData.length > 0 && (
+      {iterations.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Equation Graph</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={graphData}>
+              <LineChart data={iterations}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="x" />
                 <YAxis />
                 <Tooltip />
                 <Legend />
-                <Line type="monotone" dataKey="y" stroke="#8884d8" dot={false} />
+                <Line type="monotone" dataKey="fx" name="f(x)" stroke="#8884d8" dot={false} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
       )}
 
-      {errorData.length > 0 && (
+      {iterations.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Error Graph</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={errorData}>
+              <LineChart data={iterations}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="iteration" />
                 <YAxis />
@@ -149,7 +178,7 @@ const GraphicalMethods = () => {
         </Card>
       )}
 
-      {iterationData.length > 0 && (
+      {iterations.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Iteration Table</CardTitle>
@@ -160,17 +189,17 @@ const GraphicalMethods = () => {
                 <TableRow>
                   <TableHead>Iteration</TableHead>
                   <TableHead>X</TableHead>
-                  <TableHead>Y</TableHead>
-                  <TableHead>Error (%)</TableHead>
+                  <TableHead>f(X)</TableHead>
+                  <TableHead>Error</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {iterationData.map((row, index) => (
+                {iterations.map((iter, index) => (
                   <TableRow key={index}>
-                    <TableCell>{row.iteration}</TableCell>
-                    <TableCell>{row.x.toPrecision(6)}</TableCell>
-                    <TableCell>{row.y.toPrecision(6)}</TableCell>
-                    <TableCell>{row.error.toPrecision(6)}</TableCell>
+                    <TableCell>{iter.iteration}</TableCell>
+                    <TableCell>{iter.x.toPrecision(6)}</TableCell>
+                    <TableCell>{iter.fx.toPrecision(6)}</TableCell>
+                    <TableCell>{iter.error.toPrecision(6)}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
