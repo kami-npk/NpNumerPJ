@@ -10,6 +10,7 @@ import CramersRule from "./pages/linear-algebra/CramersRule";
 import GaussEliminationMethods from "./pages/linear-algebra/GaussEliminationMethods";
 import GaussJordanMethods from "./pages/linear-algebra/GaussJordanMethods";
 import MatrixInversionMethods from "./pages/linear-algebra/MatrixInversionMethods";
+import LUDecompositionMethods from "./pages/linear-algebra/LUDecompositionMethods";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -61,7 +62,11 @@ export const navItems = [
         to: "/linear-algebra/matrix-inversion", 
         page: <MatrixInversionMethods /> 
       },
-      { title: "LU Decomposition Method", to: "/linear-algebra/lu-decomposition", page: <PlaceholderComponent title="LU Decomposition Method" /> },
+      { 
+        title: "LU Decomposition Method", 
+        to: "/linear-algebra/lu-decomposition", 
+        page: <LUDecompositionMethods /> 
+      },
       { title: "Jacobi Iteration Method", to: "/linear-algebra/jacobi-iteration", page: <PlaceholderComponent title="Jacobi Iteration Method" /> },
       { title: "Conjugate Gradient Method", to: "/linear-algebra/conjugate-gradient", page: <PlaceholderComponent title="Conjugate Gradient Method" /> },
     ],
