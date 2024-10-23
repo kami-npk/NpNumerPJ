@@ -1,3 +1,4 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState, useEffect } from "react";
 import { Button, Form, Table, Row, Col, Accordion, Modal } from "react-bootstrap";
 import NavigationBar from '../MyNavbar';
