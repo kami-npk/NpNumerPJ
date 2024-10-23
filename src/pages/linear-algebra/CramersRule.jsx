@@ -63,26 +63,26 @@ const CramersRule = () => {
     };
 
     const renderMatrix = (matrix, title, highlightCol = -1) => (
-        <div className="mb-8">
-            <h3 className="text-xl font-semibold text-center mb-4">{title}</h3>
+        <div className="mb-4">
+            <h3 className="text-xl font-semibold text-center mb-2">{title}</h3>
             <div className="overflow-x-auto">
-                <Table>
+                <Table className="border border-border">
                     <TableHeader>
-                        <TableRow>
-                            <TableHead></TableHead>
+                        <TableRow className="bg-muted/50">
+                            <TableHead className="h-8 px-2"></TableHead>
                             {Array(Dimension).fill().map((_, i) => (
-                                <TableHead key={i} className="text-center">x{i + 1}</TableHead>
+                                <TableHead key={i} className="text-center h-8 px-2">x{i + 1}</TableHead>
                             ))}
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {matrix.map((row, i) => (
-                            <TableRow key={i}>
-                                <TableCell className="font-medium text-center">{i + 1}</TableCell>
+                            <TableRow key={i} className="border-b border-border">
+                                <TableCell className="font-medium text-center h-8 px-2">{i + 1}</TableCell>
                                 {row.map((value, j) => (
                                     <TableCell 
                                         key={j} 
-                                        className={`text-center ${j === highlightCol ? 'bg-blue-100 dark:bg-blue-900' : ''}`}
+                                        className={`text-center h-8 px-2 ${j === highlightCol ? 'bg-blue-100 dark:bg-blue-900' : ''}`}
                                     >
                                         {value}
                                     </TableCell>
@@ -92,6 +92,11 @@ const CramersRule = () => {
                     </TableBody>
                 </Table>
             </div>
+            {title.includes('A') && (
+                <p className="text-center text-sm mt-1">
+                    det({title}) = {title === 'Matrix A' ? detA?.toFixed(4) : determinants[parseInt(title.slice(-1)) - 1]?.toFixed(4)}
+                </p>
+            )}
         </div>
     );
 
@@ -99,13 +104,13 @@ const CramersRule = () => {
         <div className="container mx-auto px-4 py-8">
             <h1 className="text-3xl font-bold text-center mb-8">Cramer's Rule Calculator</h1>
             
-            <div className="max-w-4xl mx-auto space-y-8">
-                <Card>
-                    <CardHeader>
+            <div className="max-w-4xl mx-auto space-y-6">
+                <Card className="bg-card">
+                    <CardHeader className="pb-4">
                         <CardTitle>Matrix Input</CardTitle>
                     </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="flex justify-center items-center gap-4">
+                    <CardContent className="space-y-4">
+                        <div className="flex justify-center items-center gap-4 mb-4">
                             <Label htmlFor="dimension">Matrix Dimension:</Label>
                             <Input
                                 id="dimension"
@@ -119,36 +124,36 @@ const CramersRule = () => {
                         </div>
 
                         <div className="overflow-x-auto">
-                            <Table>
+                            <Table className="border border-border">
                                 <TableHeader>
-                                    <TableRow>
-                                        <TableHead></TableHead>
+                                    <TableRow className="bg-muted/50">
+                                        <TableHead className="h-8 px-2"></TableHead>
                                         {Array(Dimension).fill().map((_, i) => (
-                                            <TableHead key={i} className="text-center">x{i + 1}</TableHead>
+                                            <TableHead key={i} className="text-center h-8 px-2">x{i + 1}</TableHead>
                                         ))}
-                                        <TableHead className="text-center">B</TableHead>
+                                        <TableHead className="text-center h-8 px-2">B</TableHead>
                                     </TableRow>
                                 </TableHeader>
                                 <TableBody>
                                     {Array(Dimension).fill().map((_, i) => (
-                                        <TableRow key={i}>
-                                            <TableCell className="font-medium">Row {i + 1}</TableCell>
+                                        <TableRow key={i} className="border-b border-border">
+                                            <TableCell className="font-medium h-8 px-2">Row {i + 1}</TableCell>
                                             {Array(Dimension).fill().map((_, j) => (
-                                                <TableCell key={j}>
+                                                <TableCell key={j} className="p-0">
                                                     <Input
                                                         type="number"
                                                         value={MatrixA[i]?.[j] || ''}
                                                         onChange={(e) => handleMatrixAChange(i, j, e.target.value)}
-                                                        className="w-20"
+                                                        className="border-0 h-8 text-center"
                                                     />
                                                 </TableCell>
                                             ))}
-                                            <TableCell>
+                                            <TableCell className="p-0">
                                                 <Input
                                                     type="number"
                                                     value={MatrixB[i] || ''}
                                                     onChange={(e) => handleMatrixBChange(i, e.target.value)}
-                                                    className="w-20"
+                                                    className="border-0 h-8 text-center"
                                                 />
                                             </TableCell>
                                         </TableRow>
@@ -157,19 +162,19 @@ const CramersRule = () => {
                             </Table>
                         </div>
 
-                        <div className="flex justify-center">
+                        <div className="flex justify-center mt-4">
                             <Button onClick={solveAnswer}>Solve</Button>
                         </div>
                     </CardContent>
                 </Card>
 
                 {solution.length > 0 && (
-                    <Card>
-                        <CardHeader>
+                    <Card className="bg-muted">
+                        <CardHeader className="pb-4">
                             <CardTitle>Solution</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-8">
-                            <div className="text-center space-y-2">
+                        <CardContent className="space-y-4">
+                            <div className="text-center space-y-1 mb-4">
                                 {solution.map((value, index) => (
                                     <p key={index} className="text-lg">
                                         x<sub>{index + 1}</sub> = {value.toFixed(4)}
@@ -178,9 +183,8 @@ const CramersRule = () => {
                             </div>
 
                             {renderMatrix(MatrixA, 'Matrix A')}
-                            <p className="text-center text-lg">det(A) = {detA?.toFixed(4)}</p>
-
-                            {determinants.map((det, index) => (
+                            
+                            {determinants.map((_, index) => (
                                 <div key={index}>
                                     {renderMatrix(
                                         MatrixA.map((row, i) => 
@@ -189,9 +193,6 @@ const CramersRule = () => {
                                         `Matrix A${index + 1}`,
                                         index
                                     )}
-                                    <p className="text-center text-lg">
-                                        det(A{index + 1}) = {det.toFixed(4)}
-                                    </p>
                                 </div>
                             ))}
                         </CardContent>
