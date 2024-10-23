@@ -203,10 +203,23 @@ const MatrixInversionMethods = () => {
                             <CardTitle>Solution</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="text-center space-y-1 mb-4">
-                                {solutionSteps.map((step, index) => (
-                                    <p key={index} className="text-lg">{step.step}</p>
-                                ))}
+                            <div className="flex justify-center gap-8 mt-8">
+                                <div className="flex-1 max-w-md">
+                                    <h4 className="text-lg font-medium text-center mb-2">Inverse Matrix (A⁻¹)</h4>
+                                    {renderMatrix(inverseMatrix, '')}
+                                </div>
+                                <div className="flex-1 max-w-md">
+                                    <h4 className="text-lg font-medium text-center mb-2">Matrix B</h4>
+                                    <Table className="border border-border w-auto mx-auto">
+                                        <TableBody>
+                                            {MatrixB.map((value, i) => (
+                                                <TableRow key={i}>
+                                                    <TableCell className="text-center">{value}</TableCell>
+                                                </TableRow>
+                                            ))}
+                                        </TableBody>
+                                    </Table>
+                                </div>
                             </div>
 
                             <div className="space-y-6">
@@ -217,25 +230,6 @@ const MatrixInversionMethods = () => {
                                         {renderMatrix(step.matrix)}
                                     </div>
                                 ))}
-
-                                <div className="grid grid-cols-2 gap-4 mt-8">
-                                    <div>
-                                        <h4 className="text-lg font-medium text-center mb-2">Inverse Matrix (A⁻¹)</h4>
-                                        {renderMatrix(inverseMatrix, '')}
-                                    </div>
-                                    <div>
-                                        <h4 className="text-lg font-medium text-center mb-2">Matrix B</h4>
-                                        <Table className="border border-border w-auto mx-auto">
-                                            <TableBody>
-                                                {MatrixB.map((value, i) => (
-                                                    <TableRow key={i}>
-                                                        <TableCell className="text-center">{value}</TableCell>
-                                                    </TableRow>
-                                                ))}
-                                            </TableBody>
-                                        </Table>
-                                    </div>
-                                </div>
                             </div>
                         </CardContent>
                     </Card>
