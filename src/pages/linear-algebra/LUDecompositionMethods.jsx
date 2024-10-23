@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useState, useEffect } from "react";
+import { Button, Form, Table, Row, Col, Accordion, Modal } from "react-bootstrap";
+import NavigationBar from '../MyNavbar';
+import '../../App.css';
+import { LUSolution } from "./components/LUSolution";
 
 const LUDecompositionMethods = () => {
     const [Dimension, setDimension] = useState(3);
-    const [MatrixA, setMatrixA] = useState([]);
+    const [MatrixA, setMatrixA] = useState([]); 
     const [MatrixB, setMatrixB] = useState([]);
     const [MatrixL, setMatrixL] = useState([]);
     const [MatrixU, setMatrixU] = useState([]);
     const [steps, setSteps] = useState([]);
     const [solutionSteps, setSolutionSteps] = useState([]);
+
+    const [show, setShow] = useState(false);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
 
     useEffect(() => {
         const dim = Number(Dimension);
@@ -22,16 +25,95 @@ const LUDecompositionMethods = () => {
         }
     }, [Dimension]);
 
+    const getDimension = (event) => {
+        const value = Number(event.target.value);
+        if (value > 0){
+            setDimension(value);
+        }
+    };
+
     const handleMatrixAChange = (i, j, value) => {
         const updatedMatrixA = [...MatrixA];
-        updatedMatrixA[i][j] = parseFloat(value) || 0;
+        updatedMatrixA[i][j] = parseFloat(value) || "0";
         setMatrixA(updatedMatrixA);
     };
 
     const handleMatrixBChange = (i, value) => {
         const updatedMatrixB = [...MatrixB];
-        updatedMatrixB[i] = parseFloat(value) || 0;
+        updatedMatrixB[i] = parseFloat(value) || "0";
         setMatrixB(updatedMatrixB);
+    };
+
+    const clearMatrixInputs = () => {
+        const emptyMatrixA = MatrixA.map(row => row.map(() => ''));
+        const emptyMatrixB = MatrixB.map(() => ''); 
+    
+        setMatrixA(emptyMatrixA);
+        setMatrixB(emptyMatrixB);
+    };
+
+    const getEquationApi = async () => {
+        try {
+            const response = await fetch(`https://pj-numer-api.onrender.com/linearAlgebraData/filter?data_id=1&dimension=${Dimension}`);
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+
+            const equationData = await response.json();  
+            if (equationData) {
+                setMatrixA(equationData.matrix_a);
+                setMatrixB(equationData.matrix_b[0]);
+            } else {
+                console.error("No data received");
+            }
+        } catch (error) {
+            console.error("Failed to fetch equation data:", error);
+        }
+    };
+
+    const inputTable = () => {
+        const borderStyle = { borderLeft: '1px solid #b0bdf0' };
+
+        if (!MatrixA.length || !MatrixB.length) return null;
+
+        return (
+            <Table className="rounded-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        {[...Array(Dimension)].map((_, index) => (
+                            <th key={index}> x<sub>{index + 1}</sub> </th>
+                        ))}
+                        <th style={borderStyle}>B</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {[...Array(Dimension)].map((_, i) => (
+                        <tr key={i}>
+                            <td style={{ textAlign: 'center', width: "100px" }}>Equation {i + 1}</td>
+                            {[...Array(Dimension)].map((_, j) => (
+                                <td key={j}>
+                                    <Form.Control
+                                        type="number"
+                                        placeholder="0" className="custom-placeholder"
+                                        value={MatrixA[i]?.[j] || ''}
+                                        onChange={(event) => handleMatrixAChange(i, j, event.target.value)}
+                                    />
+                                </td>
+                            ))}
+                            <td style={borderStyle}>
+                                <Form.Control
+                                    type="number"
+                                    placeholder="0" className="custom-placeholder"
+                                    value={MatrixB[i] || ''}
+                                    onChange={(event) => handleMatrixBChange(i, event.target.value)}
+                                />
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </Table>
+        );
     };
 
     const solveLU = () => {
@@ -44,7 +126,7 @@ const LUDecompositionMethods = () => {
         const U = Array(n).fill().map(() => Array(n).fill(0));
         const stepsList = [];
 
-        // LU Decomposition
+        //LU Decomposition
         for (let i = 0; i < n; i++) {
             for (let j = 0; j < n; j++) {
                 if (i <= j) {
@@ -104,135 +186,118 @@ const LUDecompositionMethods = () => {
         setSteps(stepsList);
         setSolutionSteps([...YSteps, ...XSteps]);
     };
+    
+    const printSolution = () => {
+        if (steps.length === 0) return <div>No solution available</div>;
+        return (
+            <LUSolution 
+                dimension={Dimension}
+                matrixL={MatrixL}
+                matrixU={MatrixU}
+                solutionSteps={solutionSteps}
+                printAnswer={printAnswer}
+            />
+        );
+    };
 
-    const renderMatrix = (matrix, title) => (
-        <div className="mb-4">
-            <h3 className="text-xl font-semibold text-center mb-2">{title}</h3>
-            <div className="overflow-x-auto">
-                <Table className="border border-border w-auto mx-auto">
-                    <TableHeader>
-                        <TableRow className="bg-muted/50">
-                            <TableHead className="h-8 px-1 w-12"></TableHead>
-                            {Array(matrix[0].length).fill().map((_, i) => (
-                                <TableHead key={i} className="text-center h-8 px-1 w-16">
-                                    {`x${i + 1}`}
-                                </TableHead>
-                            ))}
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {matrix.map((row, i) => (
-                            <TableRow key={i} className="border-b border-border">
-                                <TableCell className="font-medium text-center h-8 px-1">{i + 1}</TableCell>
-                                {row.map((value, j) => (
-                                    <TableCell key={j} className="text-center h-8 px-1">
-                                        {value.toFixed(4)}
-                                    </TableCell>
-                                ))}
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+    const printAnswer = () => {
+        const matrixB = MatrixB.slice();
+        const n = Dimension;
+    
+        if (steps.length === 0) return <div>No solution available</div>;
+    
+        const L = MatrixL;
+        const U = MatrixU;
+        
+        // Solve for Y in LY = B
+        const Y = Array(n).fill(0);
+        for (let i = 0; i < n; i++) {
+            Y[i] = matrixB[i];
+            for (let j = 0; j < i; j++) {
+                Y[i] -= L[i][j] * Y[j];
+            }
+        }
+    
+        // Solve for X in UX = Y
+        const X = Array(n).fill(0);
+        for (let i = n - 1; i >= 0; i--) {
+            X[i] = Y[i];
+            for (let j = i + 1; j < n; j++) {
+                X[i] -= U[i][j] * X[j];
+            }
+            X[i] /= U[i][i];
+        }
+    
+        return (
+            <div>
+                {X.map((value, index) => (
+                    <div key={index}>
+                        x<sub>{index + 1}</sub> = {value}
+                    </div>
+                ))}
             </div>
-        </div>
-    );
+        );
+    };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold text-center mb-8">LU Decomposition Method</h1>
-            
-            <div className="max-w-4xl mx-auto space-y-6">
-                <Card className="bg-card">
-                    <CardHeader className="pb-4">
-                        <CardTitle>Matrix Input</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div className="flex justify-center items-center gap-4 mb-4">
-                            <Label htmlFor="dimension">Matrix Dimension:</Label>
-                            <Input
-                                id="dimension"
-                                type="number"
-                                min="2"
-                                max="10"
-                                value={Dimension}
-                                onChange={(e) => setDimension(Number(e.target.value))}
-                                className="w-24"
-                            />
+        <>
+            <NavigationBar />
+            <div className="outer-container">
+                <h1 className='title'>LU Decomposition</h1>
+                <Row>
+                    <Col md={3} className='left-column'>
+                        <div className="form-container">
+                            <Form>
+                                <Form.Group className="mb-3" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+                                    <Form.Label>Matrix Dimension</Form.Label>
+                                    <Form.Control
+                                        type="number"
+                                        value={Dimension}
+                                        onChange={getDimension}
+                                        style={{ width: '50%' }}
+                                        placeholder="3"
+                                    />
+                                </Form.Group>
+
+                                <Button variant="dark" onClick={handleShow} className="centered-button" style={{width:"125px"}}>
+                                    Set Matrix
+                                </Button>
+                                <Button variant="dark" onClick={solveLU} className="centered-button" >
+                                    Solve
+                                </Button>
+                                <h5 style={{ textAlign: 'center', marginTop: '20px' }}>{printAnswer()}</h5>
+                                <Modal show={show} onHide={handleClose} centered  size="lg">
+                                    <Modal.Header closeButton>
+                                        <Modal.Title>Matrix Input</Modal.Title>
+                                    </Modal.Header>
+                                    <Modal.Body>
+                                        <div>{inputTable()}</div>
+                                    </Modal.Body>
+                                    <Modal.Footer>
+                                        <Button variant="dark" onClick={getEquationApi} className="centered-button-2" style={{ width: '15%' }}>
+                                            Get Matrix
+                                        </Button>
+                                        <Button variant="danger" onClick={clearMatrixInputs}>
+                                            Clear
+                                        </Button>
+                                    </Modal.Footer>
+                                </Modal>
+                            </Form>
                         </div>
-
-                        <div className="overflow-x-auto">
-                            <Table className="border border-border w-auto mx-auto">
-                                <TableHeader>
-                                    <TableRow className="bg-muted/50">
-                                        <TableHead className="h-8 px-1 w-20"></TableHead>
-                                        {Array(Dimension).fill().map((_, i) => (
-                                            <TableHead key={i} className="text-center h-8 px-1 w-16">x{i + 1}</TableHead>
-                                        ))}
-                                        <TableHead className="text-center h-8 px-1 w-16">b</TableHead>
-                                    </TableRow>
-                                </TableHeader>
-                                <TableBody>
-                                    {Array(Dimension).fill().map((_, i) => (
-                                        <TableRow key={i} className="border-b border-border">
-                                            <TableCell className="font-medium h-8 px-1">Row {i + 1}</TableCell>
-                                            {Array(Dimension).fill().map((_, j) => (
-                                                <TableCell key={j} className="p-0">
-                                                    <Input
-                                                        type="number"
-                                                        value={MatrixA[i]?.[j] || ''}
-                                                        onChange={(e) => handleMatrixAChange(i, j, e.target.value)}
-                                                        className="border-0 h-8 text-center w-16"
-                                                    />
-                                                </TableCell>
-                                            ))}
-                                            <TableCell className="p-0">
-                                                <Input
-                                                    type="number"
-                                                    value={MatrixB[i] || ''}
-                                                    onChange={(e) => handleMatrixBChange(i, e.target.value)}
-                                                    className="border-0 h-8 text-center w-16"
-                                                />
-                                            </TableCell>
-                                        </TableRow>
-                                    ))}
-                                </TableBody>
-                            </Table>
-                        </div>
-
-                        <div className="flex justify-center mt-4">
-                            <Button onClick={solveLU}>Solve</Button>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                {MatrixL.length > 0 && (
-                    <Card className="bg-muted">
-                        <CardHeader className="pb-4">
-                            <CardTitle>Solution</CardTitle>
-                        </CardHeader>
-                        <CardContent className="space-y-4">
-                            <div className="grid grid-cols-2 gap-8">
-                                <div>
-                                    <h4 className="text-lg font-medium text-center mb-2">Matrix L</h4>
-                                    {renderMatrix(MatrixL)}
-                                </div>
-                                <div>
-                                    <h4 className="text-lg font-medium text-center mb-2">Matrix U</h4>
-                                    {renderMatrix(MatrixU)}
-                                </div>
-                            </div>
-
-                            <div className="mt-8">
-                                <h4 className="text-lg font-medium text-center mb-4">Solution Steps</h4>
-                                {solutionSteps.map((step, index) => (
-                                    <p key={index} className="text-center">{step.step}</p>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                )}
+                    </Col>
+                    <Col md={9} className='right-column'>
+                        <Accordion defaultActiveKey="0">
+                            <Accordion.Item eventKey="0">
+                                <Accordion.Header>Solution</Accordion.Header>
+                                <Accordion.Body>
+                                    {printSolution()}
+                                </Accordion.Body>
+                            </Accordion.Item>
+                        </Accordion>
+                    </Col>
+                </Row>
             </div>
-        </div>
+        </>
     );
 };
 
