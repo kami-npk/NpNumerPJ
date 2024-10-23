@@ -4,9 +4,9 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export const InputForm = ({ equation, initialX, onEquationChange, onInitialXChange, onGetEquation, onCalculate, result }) => {
+export const InputForm = ({ equation, initialX, onEquationChange, onInitialXChange, onCalculate, result }) => {
   return (
-    <Card>
+    <Card className="max-w-md mx-auto">
       <CardHeader>
         <CardTitle>Input</CardTitle>
       </CardHeader>
@@ -33,7 +33,6 @@ export const InputForm = ({ equation, initialX, onEquationChange, onInitialXChan
             />
           </div>
           <div className="flex flex-col gap-2">
-            <Button onClick={onGetEquation} className="w-full">Get Equation</Button>
             <Button onClick={onCalculate} className="w-full">Solve</Button>
           </div>
           {result !== null && (

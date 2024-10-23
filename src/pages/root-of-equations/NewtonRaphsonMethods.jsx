@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { evaluate } from 'mathjs';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InputForm } from './components/InputForm';
 import { EquationGraph } from './components/EquationGraph';
 import { ErrorGraph } from './components/ErrorGraph';
 import { IterationTable } from './components/IterationTable';
-import { error, calculateNewtonRaphson } from './components/CalculationUtils';
+import { evaluate } from 'mathjs';
+import { diffEquation, error } from './components/CalculationUtils';
 
 const NewtonRaphsonMethods = () => {
-  const [equation, setEquation] = useState("");
-  const [initialX, setInitialX] = useState("");
+  const [equation, setEquation] = useState("x^2 - 4");
+  const [initialX, setInitialX] = useState("0");
   const [result, setResult] = useState(null);
   const [iterations, setIterations] = useState([]);
   const [graphData, setGraphData] = useState([]);
@@ -24,14 +24,14 @@ const NewtonRaphsonMethods = () => {
     const newErrorData = [];
 
     do {
-      const xNew = calculateNewtonRaphson(x, equation);
-      const err = error(x, xNew);
+      const xNew = x - (evaluate(equation, { x }) / evaluate(diffEquation(equation), { x }));
+      const ea = error(x, xNew);
       
       iter++;
-      newIterations.push({ iteration: iter, x: xNew, error: err });
-      newErrorData.push({ iteration: iter, error: err });
+      newIterations.push({ iteration: iter, x: xNew, error: ea });
+      newErrorData.push({ iteration: iter, error: ea });
       
-      if (Math.abs(xNew - x) < EPSILON) {
+      if (ea < EPSILON) {
         setResult(xNew);
         break;
       }
@@ -47,12 +47,10 @@ const NewtonRaphsonMethods = () => {
     const step = 0.1;
     for (let x = -5; x <= 5; x += step) {
       try {
-        graphData.push({
-          x,
-          y: evaluate(equation, { x })
-        });
+        const y = evaluate(equation, { x });
+        graphData.push({ x, y });
       } catch (error) {
-        console.error(`Error evaluating equation at x=${x}:`, error);
+        console.error('Error evaluating equation:', error);
       }
     }
     setGraphData(graphData);
@@ -60,20 +58,19 @@ const NewtonRaphsonMethods = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">Newton-Raphson Method</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
-          <InputForm
-            equation={equation}
-            initialX={initialX}
-            onEquationChange={setEquation}
-            onInitialXChange={setInitialX}
-            onCalculate={calculateRoot}
-            result={result}
-          />
-        </div>
-        <div className="md:col-span-2 space-y-6">
-          {graphData.length > 0 && (
+      <h1 className="text-3xl font-bold mb-6 text-center">Newton-Raphson Method</h1>
+      <div className="space-y-6">
+        <InputForm
+          equation={equation}
+          initialX={initialX}
+          onEquationChange={setEquation}
+          onInitialXChange={setInitialX}
+          onCalculate={calculateRoot}
+          result={result}
+        />
+
+        {result !== null && (
+          <>
             <Card>
               <CardHeader>
                 <CardTitle>Equation Graph</CardTitle>
@@ -82,9 +79,7 @@ const NewtonRaphsonMethods = () => {
                 <EquationGraph data={graphData} />
               </CardContent>
             </Card>
-          )}
-          
-          {errorData.length > 0 && (
+
             <Card>
               <CardHeader>
                 <CardTitle>Error Graph</CardTitle>
@@ -93,9 +88,7 @@ const NewtonRaphsonMethods = () => {
                 <ErrorGraph data={errorData} />
               </CardContent>
             </Card>
-          )}
-          
-          {iterations.length > 0 && (
+
             <Card>
               <CardHeader>
                 <CardTitle>Iteration Table</CardTitle>
@@ -104,8 +97,8 @@ const NewtonRaphsonMethods = () => {
                 <IterationTable data={iterations} />
               </CardContent>
             </Card>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </div>
   );
