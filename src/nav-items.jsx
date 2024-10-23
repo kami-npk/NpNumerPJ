@@ -12,6 +12,7 @@ import GaussJordanMethods from "./pages/linear-algebra/GaussJordanMethods";
 import MatrixInversionMethods from "./pages/linear-algebra/MatrixInversionMethods";
 import LUDecompositionMethods from "./pages/linear-algebra/LUDecompositionMethods";
 import CholeskyDecompositionMethods from "./pages/linear-algebra/CholeskyDecompositionMethods";
+import JacobiIterationMethods from "./pages/linear-algebra/JacobiIterationMethods";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -43,36 +44,13 @@ export const navItems = [
     page: <PlaceholderComponent title="Linear Algebra Equations" />,
     description: "Techniques for solving systems of linear equations",
     subItems: [
-      { 
-        title: "Cramer's Rule", 
-        to: "/linear-algebra/cramers-rule", 
-        page: <CramersRule /> 
-      },
-      { 
-        title: "Gauss Elimination Methods", 
-        to: "/linear-algebra/gauss-elimination", 
-        page: <GaussEliminationMethods /> 
-      },
-      { 
-        title: "Gauss-Jordan Methods", 
-        to: "/linear-algebra/gauss-jordan", 
-        page: <GaussJordanMethods /> 
-      },
-      { 
-        title: "Matrix Inversion", 
-        to: "/linear-algebra/matrix-inversion", 
-        page: <MatrixInversionMethods /> 
-      },
-      { 
-        title: "LU Decomposition", 
-        to: "/linear-algebra/lu-decomposition", 
-        page: <LUDecompositionMethods /> 
-      },
-      { 
-        title: "Cholesky Decomposition", 
-        to: "/linear-algebra/cholesky-decomposition", 
-        page: <CholeskyDecompositionMethods /> 
-      },
+      { title: "Cramer's Rule", to: "/linear-algebra/cramers-rule", page: <CramersRule /> },
+      { title: "Gauss Elimination Methods", to: "/linear-algebra/gauss-elimination", page: <GaussEliminationMethods /> },
+      { title: "Gauss-Jordan Methods", to: "/linear-algebra/gauss-jordan", page: <GaussJordanMethods /> },
+      { title: "Matrix Inversion", to: "/linear-algebra/matrix-inversion", page: <MatrixInversionMethods /> },
+      { title: "LU Decomposition", to: "/linear-algebra/lu-decomposition", page: <LUDecompositionMethods /> },
+      { title: "Cholesky Decomposition", to: "/linear-algebra/cholesky-decomposition", page: <CholeskyDecompositionMethods /> },
+      { title: "Jacobi Iteration Method", to: "/linear-algebra/jacobi-iteration", page: <JacobiIterationMethods /> },
     ],
   },
   {
