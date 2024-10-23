@@ -43,7 +43,6 @@ export const navItems = [
         to: "/linear-algebra/cramers-rule", 
         page: <CramersRule /> 
       },
-      { title: "Cramer's Rule", to: "/linear-algebra/cramers-rule", page: <CramersRule /> },
       { title: "Gauss Elimination Methods", to: "/linear-algebra/gauss-elimination", page: <PlaceholderComponent title="Gauss Elimination Methods" /> },
       { title: "Gauss Jordan Methods", to: "/linear-algebra/gauss-jordan", page: <PlaceholderComponent title="Gauss Jordan Methods" /> },
       { title: "Matrix Inversion", to: "/linear-algebra/matrix-inversion", page: <PlaceholderComponent title="Matrix Inversion" /> },

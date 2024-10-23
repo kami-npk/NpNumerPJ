@@ -1,157 +1,205 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { evaluate, det } from 'mathjs';
+import { det } from 'mathjs';
 
 const CramersRule = () => {
-  const [size, setSize] = useState(3);
-  const [matrixA, setMatrixA] = useState(Array(3).fill().map(() => Array(3).fill(0)));
-  const [matrixB, setMatrixB] = useState(Array(3).fill(0));
-  const [solution, setSolution] = useState(null);
+    const [Dimension, setDimension] = useState(3);
+    const [MatrixA, setMatrixA] = useState([]);
+    const [MatrixB, setMatrixB] = useState([]);
+    const [solution, setSolution] = useState([]);
+    const [determinants, setDeterminants] = useState([]);
+    const [detA, setDetA] = useState(null);
 
-  const handleSizeChange = (e) => {
-    const newSize = parseInt(e.target.value) || 2;
-    if (newSize >= 2 && newSize <= 10) {
-      setSize(newSize);
-      setMatrixA(Array(newSize).fill().map(() => Array(newSize).fill(0)));
-      setMatrixB(Array(newSize).fill(0));
-    }
-  };
+    useEffect(() => {
+        const dim = Number(Dimension);
+        if (dim > 0) {
+            setMatrixA(Array(dim).fill().map(() => Array(dim).fill(0)));
+            setMatrixB(Array(dim).fill(0));
+        }
+    }, [Dimension]);
 
-  const handleMatrixAChange = (row, col, value) => {
-    const newMatrix = [...matrixA];
-    newMatrix[row][col] = parseFloat(value) || 0;
-    setMatrixA(newMatrix);
-  };
+    const handleMatrixAChange = (i, j, value) => {
+        const updatedMatrixA = [...MatrixA];
+        updatedMatrixA[i][j] = parseFloat(value) || 0;
+        setMatrixA(updatedMatrixA);
+    };
 
-  const handleMatrixBChange = (row, value) => {
-    const newVector = [...matrixB];
-    newVector[row] = parseFloat(value) || 0;
-    setMatrixB(newVector);
-  };
+    const handleMatrixBChange = (i, value) => {
+        const updatedMatrixB = [...MatrixB];
+        updatedMatrixB[i] = parseFloat(value) || 0;
+        setMatrixB(updatedMatrixB);
+    };
 
-  const calculateSolution = () => {
-    try {
-      const detA = det(matrixA);
-      if (Math.abs(detA) < 1e-10) {
-        setSolution({ error: "The system has no unique solution (determinant is zero)" });
-        return;
-      }
+    const solveAnswer = () => {
+        const matrixA = MatrixA.map(row => row.slice());
+        const matrixB = MatrixB.slice();
 
-      const solutions = [];
-      for (let i = 0; i < size; i++) {
-        const matrixAi = matrixA.map((row, rowIndex) => 
-          row.map((val, colIndex) => colIndex === i ? matrixB[rowIndex] : val)
-        );
-        solutions.push(det(matrixAi) / detA);
-      }
-      setSolution({ values: solutions });
-    } catch (error) {
-      setSolution({ error: "Error calculating solution" });
-    }
-  };
+        const detA = det(matrixA);
+        setDetA(detA);
 
-  return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Cramer's Rule Calculator</h1>
-      
-      <div className="max-w-4xl mx-auto space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>Matrix Size</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <Label htmlFor="size">Size (NxN):</Label>
-              <Input
-                id="size"
-                type="number"
-                min="2"
-                max="10"
-                value={size}
-                onChange={handleSizeChange}
-                className="w-24"
-              />
-            </div>
-          </CardContent>
-        </Card>
+        if (detA === 0) {
+            setSolution(['No unique solution']);
+            setDeterminants([]);
+            return;
+        }
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Matrix Input</CardTitle>
-          </CardHeader>
-          <CardContent>
+        const solutions = [];
+        const dets = [];
+        for (let i = 0; i < Dimension; i++) {
+            const matrixAi = matrixA.map((row, index) => {
+                return row.map((value, colIndex) => (colIndex === i ? matrixB[index] : value));
+            });
+            const detAi = det(matrixAi);
+            dets.push(detAi);
+            solutions.push(detAi / detA);
+        }
+
+        setDeterminants(dets);
+        setSolution(solutions);
+    };
+
+    const renderMatrix = (matrix, title, highlightCol = -1) => (
+        <div className="mb-8">
+            <h3 className="text-xl font-semibold text-center mb-4">{title}</h3>
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Matrix A</TableHead>
-                    {Array(size).fill().map((_, i) => (
-                      <TableHead key={i}>x{i + 1}</TableHead>
-                    ))}
-                    <TableHead>B</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Array(size).fill().map((_, row) => (
-                    <TableRow key={row}>
-                      <TableCell>Row {row + 1}</TableCell>
-                      {Array(size).fill().map((_, col) => (
-                        <TableCell key={col}>
-                          <Input
-                            type="number"
-                            value={matrixA[row][col] || ''}
-                            onChange={(e) => handleMatrixAChange(row, col, e.target.value)}
-                            className="w-20"
-                          />
-                        </TableCell>
-                      ))}
-                      <TableCell>
-                        <Input
-                          type="number"
-                          value={matrixB[row] || ''}
-                          onChange={(e) => handleMatrixBChange(row, e.target.value)}
-                          className="w-20"
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead></TableHead>
+                            {Array(Dimension).fill().map((_, i) => (
+                                <TableHead key={i} className="text-center">x{i + 1}</TableHead>
+                            ))}
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {matrix.map((row, i) => (
+                            <TableRow key={i}>
+                                <TableCell className="font-medium text-center">{i + 1}</TableCell>
+                                {row.map((value, j) => (
+                                    <TableCell 
+                                        key={j} 
+                                        className={`text-center ${j === highlightCol ? 'bg-blue-100 dark:bg-blue-900' : ''}`}
+                                    >
+                                        {value}
+                                    </TableCell>
+                                ))}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
             </div>
+        </div>
+    );
 
-            <div className="mt-4 flex justify-center">
-              <Button onClick={calculateSolution}>Solve</Button>
+    return (
+        <div className="container mx-auto px-4 py-8">
+            <h1 className="text-3xl font-bold text-center mb-8">Cramer's Rule Calculator</h1>
+            
+            <div className="max-w-4xl mx-auto space-y-8">
+                <Card>
+                    <CardHeader>
+                        <CardTitle>Matrix Input</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="flex justify-center items-center gap-4">
+                            <Label htmlFor="dimension">Matrix Dimension:</Label>
+                            <Input
+                                id="dimension"
+                                type="number"
+                                min="2"
+                                max="10"
+                                value={Dimension}
+                                onChange={(e) => setDimension(Number(e.target.value))}
+                                className="w-24"
+                            />
+                        </div>
+
+                        <div className="overflow-x-auto">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead></TableHead>
+                                        {Array(Dimension).fill().map((_, i) => (
+                                            <TableHead key={i} className="text-center">x{i + 1}</TableHead>
+                                        ))}
+                                        <TableHead className="text-center">B</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {Array(Dimension).fill().map((_, i) => (
+                                        <TableRow key={i}>
+                                            <TableCell className="font-medium">Row {i + 1}</TableCell>
+                                            {Array(Dimension).fill().map((_, j) => (
+                                                <TableCell key={j}>
+                                                    <Input
+                                                        type="number"
+                                                        value={MatrixA[i]?.[j] || ''}
+                                                        onChange={(e) => handleMatrixAChange(i, j, e.target.value)}
+                                                        className="w-20"
+                                                    />
+                                                </TableCell>
+                                            ))}
+                                            <TableCell>
+                                                <Input
+                                                    type="number"
+                                                    value={MatrixB[i] || ''}
+                                                    onChange={(e) => handleMatrixBChange(i, e.target.value)}
+                                                    className="w-20"
+                                                />
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </div>
+
+                        <div className="flex justify-center">
+                            <Button onClick={solveAnswer}>Solve</Button>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                {solution.length > 0 && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Solution</CardTitle>
+                        </CardHeader>
+                        <CardContent className="space-y-8">
+                            <div className="text-center space-y-2">
+                                {solution.map((value, index) => (
+                                    <p key={index} className="text-lg">
+                                        x<sub>{index + 1}</sub> = {value.toFixed(4)}
+                                    </p>
+                                ))}
+                            </div>
+
+                            {renderMatrix(MatrixA, 'Matrix A')}
+                            <p className="text-center text-lg">det(A) = {detA?.toFixed(4)}</p>
+
+                            {determinants.map((det, index) => (
+                                <div key={index}>
+                                    {renderMatrix(
+                                        MatrixA.map((row, i) => 
+                                            row.map((val, j) => j === index ? MatrixB[i] : val)
+                                        ),
+                                        `Matrix A${index + 1}`,
+                                        index
+                                    )}
+                                    <p className="text-center text-lg">
+                                        det(A{index + 1}) = {det.toFixed(4)}
+                                    </p>
+                                </div>
+                            ))}
+                        </CardContent>
+                    </Card>
+                )}
             </div>
-          </CardContent>
-        </Card>
-
-        {solution && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Solution</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {solution.error ? (
-                <p className="text-red-500">{solution.error}</p>
-              ) : (
-                <div className="space-y-2">
-                  {solution.values.map((value, index) => (
-                    <p key={index}>
-                      x<sub>{index + 1}</sub> = {value.toFixed(4)}
-                    </p>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 export default CramersRule;
