@@ -1,7 +1,7 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useState, useEffect } from "react";
 import { Button, Form, Table, Row, Col, Accordion, Modal } from "react-bootstrap";
-import NavigationBar from '../MyNavbar';
+import Navbar from "@/components/Navbar";
 import '../../App.css';
 import { LUSolution } from "./components/LUSolution";
 
@@ -242,7 +242,7 @@ const LUDecompositionMethods = () => {
 
     return (
         <>
-            <NavigationBar />
+            <Navbar />
             <div className="outer-container">
                 <h1 className='title'>LU Decomposition</h1>
                 <Row>
@@ -303,3 +303,4 @@ const LUDecompositionMethods = () => {
 };
 
 export default LUDecompositionMethods;
+
