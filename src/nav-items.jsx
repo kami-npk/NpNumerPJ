@@ -13,6 +13,7 @@ import MatrixInversionMethods from "./pages/linear-algebra/MatrixInversionMethod
 import LUDecompositionMethods from "./pages/linear-algebra/LUDecompositionMethods";
 import CholeskyDecompositionMethods from "./pages/linear-algebra/CholeskyDecompositionMethods";
 import JacobiIterationMethods from "./pages/linear-algebra/JacobiIterationMethods";
+import GaussSeidelMethods from "./pages/linear-algebra/GaussSeidelMethods";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -51,6 +52,7 @@ export const navItems = [
       { title: "LU Decomposition", to: "/linear-algebra/lu-decomposition", page: <LUDecompositionMethods /> },
       { title: "Cholesky Decomposition", to: "/linear-algebra/cholesky-decomposition", page: <CholeskyDecompositionMethods /> },
       { title: "Jacobi Iteration Method", to: "/linear-algebra/jacobi-iteration", page: <JacobiIterationMethods /> },
+      { title: "Gauss-Seidel Method", to: "/linear-algebra/gauss-seidel", page: <GaussSeidelMethods /> },
     ],
   },
   {
