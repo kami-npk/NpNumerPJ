@@ -15,20 +15,6 @@ const NewtonRaphsonMethods = () => {
   const [graphData, setGraphData] = useState([]);
   const [errorData, setErrorData] = useState([]);
 
-  const getEquationApi = async () => {
-    try {
-      const response = await fetch("https://pj-numer-api.onrender.com/rootOfEquationData/filter?data_id=3");
-      if (!response.ok) throw new Error("Network response was not ok");
-      const data = await response.json();
-      if (data) {
-        setEquation(data.fx);
-        setInitialX(parseFloat(data.initial_x).toFixed(4));
-      }
-    } catch (error) {
-      console.error("Failed to fetch equation data:", error);
-    }
-  };
-
   const calculateRoot = () => {
     let x = parseFloat(initialX);
     let iter = 0;
@@ -82,7 +68,6 @@ const NewtonRaphsonMethods = () => {
             initialX={initialX}
             onEquationChange={setEquation}
             onInitialXChange={setInitialX}
-            onGetEquation={getEquationApi}
             onCalculate={calculateRoot}
             result={result}
           />
