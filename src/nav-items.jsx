@@ -8,6 +8,7 @@ import NewtonRaphsonMethods from "./pages/root-of-equations/NewtonRaphsonMethods
 import SecantMethods from "./pages/root-of-equations/SecantMethods";
 import CramersRule from "./pages/linear-algebra/CramersRule";
 import GaussEliminationMethods from "./pages/linear-algebra/GaussEliminationMethods";
+import GaussJordanMethods from "./pages/linear-algebra/GaussJordanMethods";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -49,8 +50,11 @@ export const navItems = [
         to: "/linear-algebra/gauss-elimination", 
         page: <GaussEliminationMethods /> 
       },
-      { title: "Gauss Elimination Methods", to: "/linear-algebra/gauss-elimination", page: <PlaceholderComponent title="Gauss Elimination Methods" /> },
-      { title: "Gauss Jordan Methods", to: "/linear-algebra/gauss-jordan", page: <PlaceholderComponent title="Gauss Jordan Methods" /> },
+      { 
+        title: "Gauss-Jordan Methods", 
+        to: "/linear-algebra/gauss-jordan", 
+        page: <GaussJordanMethods /> 
+      },
       { title: "Matrix Inversion", to: "/linear-algebra/matrix-inversion", page: <PlaceholderComponent title="Matrix Inversion" /> },
       { title: "LU Decomposition Method", to: "/linear-algebra/lu-decomposition", page: <PlaceholderComponent title="LU Decomposition Method" /> },
       { title: "Jacobi Iteration Method", to: "/linear-algebra/jacobi-iteration", page: <PlaceholderComponent title="Jacobi Iteration Method" /> },
