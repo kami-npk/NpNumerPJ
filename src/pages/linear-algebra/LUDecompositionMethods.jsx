@@ -203,7 +203,7 @@ const LUDecompositionMethods = () => {
                         <CardHeader className="pb-4">
                             <CardTitle>Solution</CardTitle>
                         </CardHeader>
-                        <CardContent className="space-y-4">
+                        <CardContent className="space-y-6">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
                                     <h4 className="text-lg font-medium text-center mb-2">Matrix L</h4>
@@ -215,13 +215,26 @@ const LUDecompositionMethods = () => {
                                 </div>
                             </div>
 
-                            <div className="text-center space-y-2">
-                                <h4 className="text-lg font-medium">Solution</h4>
-                                {solution.map((value, index) => (
-                                    <p key={index} className="text-lg">
-                                        x<sub>{index + 1}</sub> = {value.toFixed(4)}
-                                    </p>
-                                ))}
+                            <div>
+                                <h4 className="text-lg font-medium text-center mb-2">Y Values (From LY = B)</h4>
+                                <div className="flex justify-center gap-8">
+                                    {steps[0]?.matrix.L[0].map((_, index) => (
+                                        <div key={index} className="text-lg">
+                                            y<sub>{index + 1}</sub> = {(MatrixB[index] || 0).toFixed(4)}
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div>
+                                <h4 className="text-lg font-medium text-center mb-2">Solution (From UX = Y)</h4>
+                                <div className="flex justify-center gap-8">
+                                    {solution.map((value, index) => (
+                                        <div key={index} className="text-lg">
+                                            x<sub>{index + 1}</sub> = {value.toFixed(4)}
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
                         </CardContent>
                     </Card>
