@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { evaluate } from 'mathjs';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -29,13 +30,15 @@ const SecantMethods = () => {
     setIterations(iterationData);
     setErrorData(results.errors.map((err, i) => ({ iteration: i + 1, error: err })));
 
-    // Generate equation graph data
+    // Generate equation graph data with proper error handling
     const graphData = [];
     const step = 0.1;
-    for (let x = -5; x <= 5; x += step) {
+    for (let x = -10; x <= 10; x += step) {
       try {
         const y = evaluate(equation, { x });
-        graphData.push({ x, y });
+        if (!isNaN(y) && isFinite(y)) {
+          graphData.push({ x, y });
+        }
       } catch (error) {
         console.error('Error evaluating equation:', error);
       }
