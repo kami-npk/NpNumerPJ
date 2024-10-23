@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-const MatrixInversionMethods = () => {
+const LUDecompositionMethods = () => {
     const [Dimension, setDimension] = useState(3);
     const [MatrixA, setMatrixA] = useState([]);
     const [MatrixB, setMatrixB] = useState([]);
-    const [inverseMatrix, setInverseMatrix] = useState([]);
+    const [MatrixL, setMatrixL] = useState([]);
+    const [MatrixU, setMatrixU] = useState([]);
     const [steps, setSteps] = useState([]);
     const [solutionSteps, setSolutionSteps] = useState([]);
 
@@ -33,68 +34,75 @@ const MatrixInversionMethods = () => {
         setMatrixB(updatedMatrixB);
     };
 
-    const solveInverse = () => {
+    const solveLU = () => {
         const matrixA = MatrixA.map(row => row.slice());
         const matrixB = MatrixB.slice();
         const n = Dimension;
 
-        // Initialize the augmented matrix [A | I]
-        const augmentedMatrix = matrixA.map((row, i) => [...row, ...Array(n).fill(0)]);
-        for (let i = 0; i < n; i++) augmentedMatrix[i][n + i] = 1;
-
+        // Initialize L and U matrices
+        const L = Array(n).fill().map(() => Array(n).fill(0));
+        const U = Array(n).fill().map(() => Array(n).fill(0));
         const stepsList = [];
-        const addStep = (description, matrix) => {
-            stepsList.push({ description, matrix: matrix.map(row => row.slice()) });
-        };
 
-        // Gauss-Jordan Elimination
-        for (let k = 0; k < n; k++) {
-            if (augmentedMatrix[k][k] === 0) {
-                for (let i = k + 1; i < n; i++) {
-                    if (augmentedMatrix[i][k] !== 0) {
-                        [augmentedMatrix[k], augmentedMatrix[i]] = [augmentedMatrix[i], augmentedMatrix[k]];
-                        addStep(`Swapped row ${k + 1} with row ${i + 1}`, augmentedMatrix);
-                        break;
-                    }
-                }
-            }
-
-            const pivot = augmentedMatrix[k][k];
-            for (let j = 0; j < 2 * n; j++) {
-                augmentedMatrix[k][j] /= pivot;
-            }
-            addStep(`Normalized row ${k + 1}`, augmentedMatrix);
-
-            for (let i = 0; i < n; i++) {
-                if (i !== k) {
-                    const factor = augmentedMatrix[i][k];
-                    for (let j = 0; j < 2 * n; j++) {
-                        augmentedMatrix[i][j] -= factor * augmentedMatrix[k][j];
-                    }
-                    addStep(`Eliminated column ${k + 1} from row ${i + 1}`, augmentedMatrix);
-                }
-            }
-        }
-
-        const inverse = augmentedMatrix.map(row => row.slice(n));
-        const resultX = Array(n).fill(0);
-        const solutionStepsList = [];
-
+        // LU Decomposition
         for (let i = 0; i < n; i++) {
-            let sum = 0;
             for (let j = 0; j < n; j++) {
-                sum += inverse[i][j] * matrixB[j];
+                if (i <= j) {
+                    U[i][j] = matrixA[i][j];
+                    for (let k = 0; k < i; k++) {
+                        U[i][j] -= L[i][k] * U[k][j];
+                    }
+                }
+                if (i === j) {
+                    L[i][i] = 1;
+                } else if (i < j) {
+                    L[j][i] = matrixA[j][i];
+                    for (let k = 0; k < i; k++) {
+                        L[j][i] -= L[j][k] * U[k][i];
+                    }
+                    L[j][i] /= U[i][i];
+                }
             }
-            resultX[i] = sum;
-            solutionStepsList.push({
-                description: `Row ${i + 1} multiplication`,
-                step: `x${i + 1} = ${inverse[i].map((val, idx) => `${val.toFixed(4)} × ${matrixB[idx]}`).join(' + ')} = ${sum.toFixed(4)}`
+            stepsList.push({
+                description: `Step ${i + 1}`,
+                matrix: { L: L.map(row => row.slice()), U: U.map(row => row.slice()) }
             });
         }
 
-        setInverseMatrix(inverse);
+        // Solve for Y in LY = B
+        const Y = Array(n).fill(0);
+        const YSteps = [];
+
+        for (let i = 0; i < n; i++) {
+            Y[i] = matrixB[i];
+            for (let j = 0; j < i; j++) {
+                Y[i] -= L[i][j] * Y[j];
+            }
+            YSteps.push({
+                description: `Solving for Y${i + 1}`,
+                step: `Y${i + 1} = ${Y[i]}`
+            });
+        }
+
+        // Solve for X in UX = Y
+        const X = Array(n).fill(0);
+        const XSteps = [];
+
+        for (let i = n - 1; i >= 0; i--) {
+            X[i] = Y[i];
+            for (let j = i + 1; j < n; j++) {
+                X[i] -= U[i][j] * X[j];
+            }
+            XSteps.push({
+                description: `Solving for X${i + 1}`,
+                step: `X${i + 1} = ${X[i]}`
+            });
+        }
+
+        setMatrixL(L);
+        setMatrixU(U);
         setSteps(stepsList);
-        setSolutionSteps(solutionStepsList);
+        setSolutionSteps([...YSteps, ...XSteps]);
     };
 
     const renderMatrix = (matrix, title) => (
@@ -107,7 +115,7 @@ const MatrixInversionMethods = () => {
                             <TableHead className="h-8 px-1 w-12"></TableHead>
                             {Array(matrix[0].length).fill().map((_, i) => (
                                 <TableHead key={i} className="text-center h-8 px-1 w-16">
-                                    {i < Dimension ? `x${i + 1}` : `I${i - Dimension + 1}`}
+                                    {`x${i + 1}`}
                                 </TableHead>
                             ))}
                         </TableRow>
@@ -131,7 +139,7 @@ const MatrixInversionMethods = () => {
 
     return (
         <div className="container mx-auto px-4 py-8">
-            <h1 className="text-3xl font-bold text-center mb-8">Matrix Inversion Method</h1>
+            <h1 className="text-3xl font-bold text-center mb-8">LU Decomposition Method</h1>
             
             <div className="max-w-4xl mx-auto space-y-6">
                 <Card className="bg-card">
@@ -192,43 +200,32 @@ const MatrixInversionMethods = () => {
                         </div>
 
                         <div className="flex justify-center mt-4">
-                            <Button onClick={solveInverse}>Solve</Button>
+                            <Button onClick={solveLU}>Solve</Button>
                         </div>
                     </CardContent>
                 </Card>
 
-                {inverseMatrix.length > 0 && (
+                {MatrixL.length > 0 && (
                     <Card className="bg-muted">
                         <CardHeader className="pb-4">
                             <CardTitle>Solution</CardTitle>
                         </CardHeader>
                         <CardContent className="space-y-4">
-                            <div className="flex justify-center gap-8 mt-8">
-                                <div className="flex-1 max-w-md">
-                                    <h4 className="text-lg font-medium text-center mb-2">Inverse Matrix (A⁻¹)</h4>
-                                    {renderMatrix(inverseMatrix, '')}
+                            <div className="grid grid-cols-2 gap-8">
+                                <div>
+                                    <h4 className="text-lg font-medium text-center mb-2">Matrix L</h4>
+                                    {renderMatrix(MatrixL)}
                                 </div>
-                                <div className="flex-1 max-w-md">
-                                    <h4 className="text-lg font-medium text-center mb-2">Matrix B</h4>
-                                    <Table className="border border-border w-auto mx-auto">
-                                        <TableBody>
-                                            {MatrixB.map((value, i) => (
-                                                <TableRow key={i}>
-                                                    <TableCell className="text-center">{value}</TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
+                                <div>
+                                    <h4 className="text-lg font-medium text-center mb-2">Matrix U</h4>
+                                    {renderMatrix(MatrixU)}
                                 </div>
                             </div>
 
-                            <div className="space-y-6">
-                                <h3 className="text-xl font-semibold text-center">Steps</h3>
-                                {steps.map((step, index) => (
-                                    <div key={index}>
-                                        <h4 className="text-lg font-medium text-center mb-2">Step {index + 1}: {step.description}</h4>
-                                        {renderMatrix(step.matrix)}
-                                    </div>
+                            <div className="mt-8">
+                                <h4 className="text-lg font-medium text-center mb-4">Solution Steps</h4>
+                                {solutionSteps.map((step, index) => (
+                                    <p key={index} className="text-center">{step.step}</p>
                                 ))}
                             </div>
                         </CardContent>
@@ -239,4 +236,4 @@ const MatrixInversionMethods = () => {
     );
 };
 
-export default MatrixInversionMethods;
+export default LUDecompositionMethods;
