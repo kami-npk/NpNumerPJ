@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { evaluate } from 'mathjs';
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { SharedInputForm } from './components/SharedInputForm';
+import { EquationGraph } from './components/EquationGraph';
+import { ErrorGraph } from './components/ErrorGraph';
+import { IterationTable } from './components/IterationTable';
 
 const FalsePositionMethods = () => {
   const [equation, setEquation] = useState("x^2 - 4");
@@ -20,7 +21,7 @@ const FalsePositionMethods = () => {
 
   const calculateFalsePosition = (e) => {
     e.preventDefault();
-    let xm, fXm, fXr, fXl, ea;
+    let xm, fXm, fXr, ea;
     let iter = 0;
     const MAX_ITER = 50;
     const EPSILON = 0.000001;
@@ -65,139 +66,76 @@ const FalsePositionMethods = () => {
     setGraphData(graphData);
   };
 
-  const EquationGraph = () => (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={graphData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="x" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line type="monotone" dataKey="y" stroke="#8884d8" name="f(x)" />
-      </LineChart>
-    </ResponsiveContainer>
-  );
-
-  const ErrorGraph = () => (
-    <ResponsiveContainer width="100%" height={300}>
-      <LineChart data={errorData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="iteration" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Line type="monotone" dataKey="error" stroke="#82ca9d" name="Error (%)" />
-      </LineChart>
-    </ResponsiveContainer>
+  const additionalInputs = (
+    <>
+      <div className="space-y-2">
+        <Label htmlFor="xl">X Left (XL)</Label>
+        <Input
+          id="xl"
+          type="number"
+          value={xl}
+          onChange={(e) => setXL(e.target.value)}
+          placeholder="e.g., 0"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="xr">X Right (XR)</Label>
+        <Input
+          id="xr"
+          type="number"
+          value={xr}
+          onChange={(e) => setXR(e.target.value)}
+          placeholder="e.g., 3"
+        />
+      </div>
+    </>
   );
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6">False-position Method</h1>
-      <Card>
-        <CardHeader>
-          <CardTitle>Input</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={calculateFalsePosition} className="space-y-4">
-            <div>
-              <Label htmlFor="equation">Equation f(x)</Label>
-              <Input
-                id="equation"
-                value={equation}
-                onChange={(e) => setEquation(e.target.value)}
-                placeholder="e.g., x^2 - 4"
-              />
-            </div>
-            <div>
-              <Label htmlFor="xl">XL</Label>
-              <Input
-                id="xl"
-                type="number"
-                value={xl}
-                onChange={(e) => setXL(e.target.value)}
-                placeholder="e.g., 0"
-              />
-            </div>
-            <div>
-              <Label htmlFor="xr">XR</Label>
-              <Input
-                id="xr"
-                type="number"
-                value={xr}
-                onChange={(e) => setXR(e.target.value)}
-                placeholder="e.g., 3"
-              />
-            </div>
-            <Button type="submit">Solve</Button>
-          </form>
-        </CardContent>
-      </Card>
+      <h1 className="text-3xl font-bold mb-6 text-center">False-position Method</h1>
+      <div className="space-y-6">
+        <SharedInputForm
+          title="Input"
+          equation={equation}
+          onEquationChange={setEquation}
+          onCalculate={calculateFalsePosition}
+          result={result}
+        >
+          {additionalInputs}
+        </SharedInputForm>
 
-      {result !== null && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Result</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p>Root approximation: {result.toPrecision(7)}</p>
-          </CardContent>
-        </Card>
-      )}
+        {result !== null && (
+          <>
+            <Card>
+              <CardHeader>
+                <CardTitle>Equation Graph</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <EquationGraph data={graphData} />
+              </CardContent>
+            </Card>
 
-      {graphData.length > 0 && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Equation Graph</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <EquationGraph />
-          </CardContent>
-        </Card>
-      )}
+            <Card>
+              <CardHeader>
+                <CardTitle>Error Graph</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <ErrorGraph data={errorData} />
+              </CardContent>
+            </Card>
 
-      {errorData.length > 0 && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Error Graph</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ErrorGraph />
-          </CardContent>
-        </Card>
-      )}
-
-      {iterations.length > 0 && (
-        <Card className="mt-6">
-          <CardHeader>
-            <CardTitle>Iteration Table</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Iteration</TableHead>
-                  <TableHead>XL</TableHead>
-                  <TableHead>XM</TableHead>
-                  <TableHead>XR</TableHead>
-                  <TableHead>Error (%)</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {iterations.map((row, index) => (
-                  <TableRow key={index}>
-                    <TableCell>{row.iteration}</TableCell>
-                    <TableCell>{row.xl.toPrecision(7)}</TableCell>
-                    <TableCell>{row.xm.toPrecision(7)}</TableCell>
-                    <TableCell>{row.xr.toPrecision(7)}</TableCell>
-                    <TableCell>{row.error.toPrecision(7)}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </CardContent>
-        </Card>
-      )}
+            <Card>
+              <CardHeader>
+                <CardTitle>Iteration Table</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <IterationTable data={iterations} />
+              </CardContent>
+            </Card>
+          </>
+        )}
+      </div>
     </div>
   );
 };
