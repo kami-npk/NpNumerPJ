@@ -4,6 +4,7 @@ import GraphicalMethods from "./pages/root-of-equations/GraphicalMethods";
 import BisectionMethods from "./pages/root-of-equations/BisectionMethods";
 import FalsePositionMethods from "./pages/root-of-equations/FalsePositionMethods";
 import OnePointMethods from "./pages/root-of-equations/OnePointMethods";
+import NewtonRaphsonMethods from "./pages/root-of-equations/NewtonRaphsonMethods";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -24,7 +25,7 @@ export const navItems = [
       { title: "Bisection Search", to: "/root-of-equations/bisection", page: <BisectionMethods /> },
       { title: "False-position Methods", to: "/root-of-equations/false-position", page: <FalsePositionMethods /> },
       { title: "One-point Iteration Methods", to: "/root-of-equations/one-point-iteration", page: <OnePointMethods /> },
-      { title: "Newton-Raphson Methods", to: "/root-of-equations/newton-raphson", page: <PlaceholderComponent title="Newton-Raphson Methods" /> },
+      { title: "Newton-Raphson Methods", to: "/root-of-equations/newton-raphson", page: <NewtonRaphsonMethods /> },
       { title: "Secant Methods", to: "/root-of-equations/secant", page: <PlaceholderComponent title="Secant Methods" /> },
     ],
   },
