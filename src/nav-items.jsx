@@ -11,6 +11,7 @@ import GaussEliminationMethods from "./pages/linear-algebra/GaussEliminationMeth
 import GaussJordanMethods from "./pages/linear-algebra/GaussJordanMethods";
 import MatrixInversionMethods from "./pages/linear-algebra/MatrixInversionMethods";
 import LUDecompositionMethods from "./pages/linear-algebra/LUDecompositionMethods";
+import CholeskyDecompositionMethods from "./pages/linear-algebra/CholeskyDecompositionMethods";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -67,8 +68,11 @@ export const navItems = [
         to: "/linear-algebra/lu-decomposition", 
         page: <LUDecompositionMethods /> 
       },
-      { title: "Jacobi Iteration Method", to: "/linear-algebra/jacobi-iteration", page: <PlaceholderComponent title="Jacobi Iteration Method" /> },
-      { title: "Conjugate Gradient Method", to: "/linear-algebra/conjugate-gradient", page: <PlaceholderComponent title="Conjugate Gradient Method" /> },
+      { 
+        title: "Cholesky Decomposition", 
+        to: "/linear-algebra/cholesky-decomposition", 
+        page: <CholeskyDecompositionMethods /> 
+      },
     ],
   },
   {
