@@ -6,7 +6,6 @@ import FalsePositionMethods from "./pages/root-of-equations/FalsePositionMethods
 import OnePointMethods from "./pages/root-of-equations/OnePointMethods";
 import NewtonRaphsonMethods from "./pages/root-of-equations/NewtonRaphsonMethods";
 import SecantMethods from "./pages/root-of-equations/SecantMethods";
-import CramersRule from "./pages/linear-algebra/CramersRule";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -38,7 +37,7 @@ export const navItems = [
     page: <PlaceholderComponent title="Linear Algebra Equations" />,
     description: "Techniques for solving systems of linear equations",
     subItems: [
-      { title: "Cramer's Rule", to: "/linear-algebra/cramers-rule", page: <CramersRule /> },
+      { title: "Cramer's Rule", to: "/linear-algebra/cramers-rule", page: <PlaceholderComponent title="Cramer's Rule" /> },
       { title: "Gauss Elimination Methods", to: "/linear-algebra/gauss-elimination", page: <PlaceholderComponent title="Gauss Elimination Methods" /> },
       { title: "Gauss Jordan Methods", to: "/linear-algebra/gauss-jordan", page: <PlaceholderComponent title="Gauss Jordan Methods" /> },
       { title: "Matrix Inversion", to: "/linear-algebra/matrix-inversion", page: <PlaceholderComponent title="Matrix Inversion" /> },
