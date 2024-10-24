@@ -18,7 +18,6 @@ import ConjugateGradientMethods from "./pages/linear-algebra/ConjugateGradientMe
 import NewtonDividedDifference from "./pages/interpolation/NewtonDividedDifference";
 import LagrangeInterpolation from "./pages/interpolation/LagrangeInterpolation";
 import SplineInterpolation from "./pages/interpolation/SplineInterpolation";
-import LinearRegression from "./pages/extrapolation/LinearRegression";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -92,16 +91,8 @@ export const navItems = [
     page: <PlaceholderComponent title="Extrapolation Equations" />,
     description: "Techniques for estimating values beyond known data points",
     subItems: [
-      { 
-        title: "Linear Regression", 
-        to: "/extrapolation/linear-regression", 
-        page: <LinearRegression /> 
-      },
-      { 
-        title: "Multiple Regression Extrapolation", 
-        to: "/extrapolation/multiple-regression", 
-        page: <PlaceholderComponent title="Multiple Regression Extrapolation" /> 
-      },
+      { title: "Simple Regression Extrapolation", to: "/extrapolation/simple-regression", page: <PlaceholderComponent title="Simple Regression Extrapolation" /> },
+      { title: "Multiple Regression Extrapolation", to: "/extrapolation/multiple-regression", page: <PlaceholderComponent title="Multiple Regression Extrapolation" /> },
     ],
   },
   {
