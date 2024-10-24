@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,12 +19,15 @@ const SplineInterpolation = () => {
   const [splineEquation, setSplineEquation] = useState("");
   const [answerEquation, setAnswerEquation] = useState("");
 
+  // Initialize points array when pointsAmount changes
+  useEffect(() => {
+    setPoints(Array(pointsAmount).fill().map(() => ({ x: 0, fx: 0 })));
+    setSelectedPoints(Array(pointsAmount).fill(false));
+  }, [pointsAmount]);
+
   const handlePointChange = (index, field, value) => {
     const newPoints = [...points];
-    if (!newPoints[index]) {
-      newPoints[index] = { x: 0, fx: 0 };
-    }
-    newPoints[index][field] = parseFloat(value) || 0;
+    newPoints[index] = { ...newPoints[index], [field]: parseFloat(value) || 0 };
     setPoints(newPoints);
   };
 
@@ -49,11 +52,11 @@ const SplineInterpolation = () => {
 
     // Linear Spline calculation
     if (selectedPolynomial === "1") {
-      for (let i = 1; i < selectedData.length; i++) {
-        const x0 = xValues[i - 1];
-        const x1 = xValues[i];
-        const f0 = fValues[i - 1];
-        const f1 = fValues[i];
+      for (let i = 0; i < xValues.length - 1; i++) {
+        const x0 = xValues[i];
+        const x1 = xValues[i + 1];
+        const f0 = fValues[i];
+        const f1 = fValues[i + 1];
         const slope = (f1 - f0) / (x1 - x0);
         
         equation += `f_{${i}}(x) = ${f0} + (${slope})(x - ${x0}); \\ ${x0} \\leq x \\leq ${x1} \\\\ `;
@@ -63,19 +66,96 @@ const SplineInterpolation = () => {
           answerEq = `f(${findX}) = ${interpolatedValue}`;
         }
       }
+    } 
+    else if (selectedPolynomial === "2") { // Quadratic Spline
+      const n = selectedData.length;
+      const h = Array(n - 1).fill(0);
+      const a = Array(n - 1).fill(0);
+      const b = Array(n - 1).fill(0);
+      const c = Array(n - 1).fill(0);
+
+      // Calculate h values and a coefficients
+      for (let i = 0; i < n - 1; i++) {
+        h[i] = xValues[i + 1] - xValues[i];
+        a[i] = fValues[i];
+      }
+
+      // Calculate b and c coefficients
+      for (let i = 0; i < n - 1; i++) {
+        b[i] = (fValues[i + 1] - fValues[i]) / h[i];
+        if (i < n - 2) {
+          c[i + 1] = (b[i + 1] - b[i]) / (2 * h[i]);
+        }
+      }
+
+      // Generate polynomial string and calculate interpolated value
+      for (let i = 0; i < n - 1; i++) {
+        const x0 = xValues[i];
+        const x1 = xValues[i + 1];
+        
+        equation += `f_{${i}}(x) = ${a[i].toFixed(4)} + ${b[i].toFixed(4)}(x - ${x0}) + ${c[i].toFixed(4)}(x - ${x0})^2; \\ ${x0} \\leq x \\leq ${x1} \\\\ `;
+
+        if (x0 <= findX && findX <= x1) {
+          const dx = findX - x0;
+          interpolatedValue = a[i] + b[i] * dx + c[i] * dx * dx;
+          answerEq = `f(${findX}) = ${interpolatedValue.toFixed(4)}`;
+        }
+      }
     }
-    // Add Quadratic and Cubic spline calculations here
-    // Quadratic Spline calculation
-    else if (selectedPolynomial === "2") {
-      // Implement Quadratic Spline logic here
-    }
-    // Cubic Spline calculation
-    else if (selectedPolynomial === "3") {
-      // Implement Cubic Spline logic here
+    else if (selectedPolynomial === "3") { // Cubic Spline
+      const n = selectedData.length;
+      const h = Array(n - 1).fill(0);
+      const alpha = Array(n - 1).fill(0);
+      const l = Array(n).fill(0);
+      const mu = Array(n - 1).fill(0);
+      const z = Array(n).fill(0);
+      const c = Array(n).fill(0);
+      const b = Array(n - 1).fill(0);
+      const d = Array(n - 1).fill(0);
+
+      // Step 1: Calculate h and alpha
+      for (let i = 0; i < n - 1; i++) {
+        h[i] = xValues[i + 1] - xValues[i];
+        alpha[i] = 3 * (fValues[i + 1] - fValues[i]) / h[i] - 3 * (i > 0 ? (fValues[i] - fValues[i - 1]) / h[i - 1] : 0);
+      }
+
+      // Step 2: Calculate l, mu, and z
+      l[0] = 1;
+      for (let i = 1; i < n - 1; i++) {
+        l[i] = 2 * (h[i - 1] + h[i]) - h[i - 1] * mu[i - 1];
+        mu[i] = h[i] / l[i];
+        z[i] = (alpha[i] - h[i - 1] * z[i - 1]) / l[i];
+      }
+
+      // Step 3: Calculate coefficients
+      for (let j = n - 2; j >= 0; j--) {
+        c[j] = z[j] - mu[j] * c[j + 1];
+        b[j] = (fValues[j + 1] - fValues[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3;
+        d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
+      }
+
+      // Generate polynomial string and calculate interpolated value
+      for (let i = 0; i < n - 1; i++) {
+        const x0 = xValues[i];
+        const x1 = xValues[i + 1];
+        
+        equation += `f_{${i}}(x) = ${fValues[i].toFixed(4)} + ${b[i].toFixed(4)}(x - ${x0}) + ${c[i].toFixed(4)}(x - ${x0})^2 + ${d[i].toFixed(4)}(x - ${x0})^3; \\ ${x0} \\leq x \\leq ${x1} \\\\ `;
+
+        if (x0 <= findX && findX <= x1) {
+          const dx = findX - x0;
+          interpolatedValue = fValues[i] + b[i] * dx + c[i] * dx * dx + d[i] * dx * dx * dx;
+          answerEq = `f(${findX}) = ${interpolatedValue.toFixed(4)}`;
+        }
+      }
     }
 
-    const renderedEquation = katex.renderToString(equation, { throwOnError: false });
-    const renderedAnswer = katex.renderToString(answerEq, { throwOnError: false });
+    const renderedEquation = katex.renderToString(equation, {
+      throwOnError: false,
+    });
+
+    const renderedAnswer = katex.renderToString(answerEq, {
+      throwOnError: false,
+    });
 
     setSplineEquation(renderedEquation);
     setAnswerEquation(renderedAnswer);
@@ -84,26 +164,26 @@ const SplineInterpolation = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Spline Interpolation</h1>
+      <h1 className="text-3xl font-bold text-center mb-8">Spline Interpolation</h1>
       
-      <div className="grid gap-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Input</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-left block">Find f(x) where x is:</Label>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-full max-w-md space-y-2">
+                <Label>Find f(x) where x is:</Label>
                 <Input
                   type="number"
                   value={findX}
                   onChange={(e) => setFindX(parseFloat(e.target.value))}
                 />
               </div>
-              
-              <div className="space-y-2">
-                <Label className="text-left block">Select Solution:</Label>
+
+              <div className="w-full max-w-md space-y-2">
+                <Label>Select Solution:</Label>
                 <Select value={selectedPolynomial} onValueChange={setSelectedPolynomial}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select spline type" />
@@ -116,31 +196,33 @@ const SplineInterpolation = () => {
                 </Select>
               </div>
 
-              <div className="space-y-2">
-                <Label className="text-left block">Points Amount:</Label>
+              <div className="w-full max-w-md space-y-2">
+                <Label>Points Amount:</Label>
                 <Input
                   type="number"
                   value={pointsAmount}
-                  onChange={(e) => {
-                    const amount = parseInt(e.target.value);
-                    setPointsAmount(amount);
-                    setPoints(Array(amount).fill().map(() => ({ x: 0, fx: 0 })));
-                    setSelectedPoints(Array(amount).fill(false));
-                  }}
+                  onChange={(e) => setPointsAmount(parseInt(e.target.value))}
+                  min="2"
                 />
               </div>
-
-              <SplinePointsTable
-                points={points}
-                selectedPoints={selectedPoints}
-                onPointChange={handlePointChange}
-                onSelectionChange={handleSelectionChange}
-              />
-
-              <Button onClick={calculateSpline} className="w-full">
-                Calculate
-              </Button>
             </div>
+
+            <SplinePointsTable
+              points={points}
+              selectedPoints={selectedPoints}
+              onPointChange={handlePointChange}
+              onSelectionChange={handleSelectionChange}
+            />
+
+            <Button onClick={calculateSpline} className="w-full">
+              Calculate
+            </Button>
+
+            {result !== null && (
+              <div className="text-center font-semibold">
+                Result: {typeof result === 'number' ? result.toFixed(4) : result}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -149,18 +231,16 @@ const SplineInterpolation = () => {
             <CardHeader>
               <CardTitle>Solution</CardTitle>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <SplineSolutionTable points={points.filter((_, i) => selectedPoints[i])} />
+            <CardContent className="space-y-6">
+              <SplineSolutionTable points={points.filter((_, i) => selectedPoints[i])} />
 
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Spline Equation</h3>
-                  <div dangerouslySetInnerHTML={{ __html: splineEquation }} />
-                </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2">Spline Equation</h3>
+                <div dangerouslySetInnerHTML={{ __html: splineEquation }} />
+              </div>
 
-                <div className="text-center">
-                  <div dangerouslySetInnerHTML={{ __html: answerEquation }} />
-                </div>
+              <div className="text-center">
+                <div dangerouslySetInnerHTML={{ __html: answerEquation }} />
               </div>
             </CardContent>
           </Card>
