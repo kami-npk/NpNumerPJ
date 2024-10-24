@@ -17,7 +17,7 @@ export const DividedDifferenceTable = ({ dividedDiffTable, points }) => {
       <TableBody>
         {dividedDiffTable.map((row, i) => (
           <TableRow key={i}>
-            <TableCell>{points[i].x}</TableCell>
+            <TableCell>{i + 1}</TableCell>
             {row.map((val, j) => (
               <TableCell key={j}>
                 {val ? val.toFixed(4) : ''}
