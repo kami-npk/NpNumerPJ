@@ -121,7 +121,7 @@ const LinearRegression = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8">Linear Regression</h1>
       
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="max-w-3xl mx-auto space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Input</CardTitle>
@@ -193,54 +193,52 @@ const LinearRegression = () => {
           </CardContent>
         </Card>
 
-        <div className="space-y-6">
-          {result !== null && (
-            <>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Graph</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {renderGraph()}
-                </CardContent>
-              </Card>
+        {result !== null && (
+          <>
+            <Card>
+              <CardHeader>
+                <CardTitle>Graph</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {renderGraph()}
+              </CardContent>
+            </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle>Solution</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>xi</TableHead>
-                        <TableHead>yi</TableHead>
-                        <TableHead>xi²</TableHead>
-                        <TableHead>xiyi</TableHead>
+            <Card>
+              <CardHeader>
+                <CardTitle>Solution</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>xi</TableHead>
+                      <TableHead>yi</TableHead>
+                      <TableHead>xi²</TableHead>
+                      <TableHead>xiyi</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {points.map((point, i) => (
+                      <TableRow key={i}>
+                        <TableCell>{point.x}</TableCell>
+                        <TableCell>{point.y}</TableCell>
+                        <TableCell>{(point.x * point.x).toFixed(4)}</TableCell>
+                        <TableCell>{(point.x * point.y).toFixed(4)}</TableCell>
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {points.map((point, i) => (
-                        <TableRow key={i}>
-                          <TableCell>{point.x}</TableCell>
-                          <TableCell>{point.y}</TableCell>
-                          <TableCell>{(point.x * point.x).toFixed(4)}</TableCell>
-                          <TableCell>{(point.x * point.y).toFixed(4)}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
+                    ))}
+                  </TableBody>
+                </Table>
 
-                  <div className="space-y-4 text-center">
-                    <div dangerouslySetInnerHTML={{ __html: matrixEquation }} />
-                    <div dangerouslySetInnerHTML={{ __html: matrixSubstitute }} />
-                    <div dangerouslySetInnerHTML={{ __html: regressionFunction }} />
-                  </div>
-                </CardContent>
-              </Card>
-            </>
-          )}
-        </div>
+                <div className="space-y-4 text-center">
+                  <div dangerouslySetInnerHTML={{ __html: matrixEquation }} />
+                  <div dangerouslySetInnerHTML={{ __html: matrixSubstitute }} />
+                  <div dangerouslySetInnerHTML={{ __html: regressionFunction }} />
+                </div>
+              </CardContent>
+            </Card>
+          </>
+        )}
       </div>
     </div>
   );
