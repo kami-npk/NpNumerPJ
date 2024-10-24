@@ -19,6 +19,7 @@ import NewtonDividedDifference from "./pages/interpolation/NewtonDividedDifferen
 import LagrangeInterpolation from "./pages/interpolation/LagrangeInterpolation";
 import SplineInterpolation from "./pages/interpolation/SplineInterpolation";
 import LinearRegression from "./pages/extrapolation/LinearRegression";
+import MultipleRegression from "./pages/extrapolation/MultipleRegression";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -98,9 +99,9 @@ export const navItems = [
         page: <LinearRegression /> 
       },
       { 
-        title: "Multiple Regression Extrapolation", 
+        title: "Multiple Regression", 
         to: "/extrapolation/multiple-regression", 
-        page: <PlaceholderComponent title="Multiple Regression Extrapolation" /> 
+        page: <MultipleRegression /> 
       },
     ],
   },
