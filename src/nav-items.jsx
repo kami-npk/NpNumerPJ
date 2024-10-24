@@ -20,6 +20,7 @@ import LagrangeInterpolation from "./pages/interpolation/LagrangeInterpolation";
 import SplineInterpolation from "./pages/interpolation/SplineInterpolation";
 import LinearRegression from "./pages/extrapolation/LinearRegression";
 import MultipleRegression from "./pages/extrapolation/MultipleRegression";
+import PolynomialRegression from "./pages/extrapolation/PolynomialRegression";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -102,6 +103,11 @@ export const navItems = [
         title: "Multiple Regression", 
         to: "/extrapolation/multiple-regression", 
         page: <MultipleRegression /> 
+      },
+      { 
+        title: "Polynomial Regression", 
+        to: "/extrapolation/polynomial-regression", 
+        page: <PolynomialRegression /> 
       },
     ],
   },
