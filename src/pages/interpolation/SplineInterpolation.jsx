@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SplinePointsTable } from './components/SplinePointsTable';
+import { SplineSolutionTable } from './components/SplineSolutionTable';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
@@ -13,6 +14,7 @@ const SplineInterpolation = () => {
   const [pointsAmount, setPointsAmount] = useState(5);
   const [selectedPolynomial, setSelectedPolynomial] = useState("1");
   const [points, setPoints] = useState([]);
+  const [selectedPoints, setSelectedPoints] = useState([]);
   const [result, setResult] = useState(null);
   const [splineEquation, setSplineEquation] = useState("");
   const [answerEquation, setAnswerEquation] = useState("");
@@ -26,21 +28,28 @@ const SplineInterpolation = () => {
     setPoints(newPoints);
   };
 
+  const handleSelectionChange = (index) => {
+    const newSelected = [...selectedPoints];
+    newSelected[index] = !newSelected[index];
+    setSelectedPoints(newSelected);
+  };
+
   const calculateSpline = () => {
-    if (points.length < 2) {
-      alert("Please enter at least two points");
+    const selectedData = points.filter((_, i) => selectedPoints[i]);
+    if (selectedData.length < 2) {
+      alert("Please select at least two points");
       return;
     }
 
-    const xValues = points.map(p => p.x);
-    const fValues = points.map(p => p.fx);
+    const xValues = selectedData.map(p => p.x);
+    const fValues = selectedData.map(p => p.fx);
     let interpolatedValue;
     let equation = "";
     let answerEq = "";
 
     // Linear Spline calculation
     if (selectedPolynomial === "1") {
-      for (let i = 1; i < points.length; i++) {
+      for (let i = 1; i < selectedData.length; i++) {
         const x0 = xValues[i - 1];
         const x1 = xValues[i];
         const f0 = fValues[i - 1];
@@ -116,40 +125,17 @@ const SplineInterpolation = () => {
                     const amount = parseInt(e.target.value);
                     setPointsAmount(amount);
                     setPoints(Array(amount).fill().map(() => ({ x: 0, fx: 0 })));
+                    setSelectedPoints(Array(amount).fill(false));
                   }}
                 />
               </div>
 
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Point</TableHead>
-                    <TableHead>x</TableHead>
-                    <TableHead>f(x)</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Array(pointsAmount).fill().map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell>{i + 1}</TableCell>
-                      <TableCell>
-                        <Input
-                          type="number"
-                          value={points[i]?.x || 0}
-                          onChange={(e) => handlePointChange(i, 'x', e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="number"
-                          value={points[i]?.fx || 0}
-                          onChange={(e) => handlePointChange(i, 'fx', e.target.value)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+              <SplinePointsTable
+                points={points}
+                selectedPoints={selectedPoints}
+                onPointChange={handlePointChange}
+                onSelectionChange={handleSelectionChange}
+              />
 
               <Button onClick={calculateSpline} className="w-full">
                 Calculate
@@ -165,24 +151,7 @@ const SplineInterpolation = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>i</TableHead>
-                      <TableHead>xi</TableHead>
-                      <TableHead>f(xi)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {points.map((point, i) => (
-                      <TableRow key={i}>
-                        <TableCell>{i + 1}</TableCell>
-                        <TableCell>{point.x}</TableCell>
-                        <TableCell>{point.fx}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                <SplineSolutionTable points={points.filter((_, i) => selectedPoints[i])} />
 
                 <div>
                   <h3 className="text-lg font-semibold mb-2">Spline Equation</h3>
