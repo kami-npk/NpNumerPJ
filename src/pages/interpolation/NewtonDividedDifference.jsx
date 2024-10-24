@@ -3,15 +3,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { PointsTable } from './components/PointsTable';
+import { DividedDifferenceTable } from './components/DividedDifferenceTable';
 
 const NewtonDividedDifference = () => {
   const [findX, setFindX] = useState(0);
@@ -21,9 +14,10 @@ const NewtonDividedDifference = () => {
   const [dividedDiffTable, setDividedDiffTable] = useState([]);
   const [result, setResult] = useState(null);
   const [equation, setEquation] = useState("");
-  const [open, setOpen] = useState(false);
 
-  const initializePoints = (amount) => {
+  const handlePointsAmountChange = (e) => {
+    const amount = parseInt(e.target.value);
+    setPointsAmount(amount);
     const newPoints = Array(amount).fill().map(() => ({ x: 0, fx: 0 }));
     setPoints(newPoints);
     setSelectedPoints(Array(amount).fill(false));
@@ -66,25 +60,23 @@ const NewtonDividedDifference = () => {
 
     setDividedDiffTable(table);
     
-    // Calculate result
+    // Calculate result and equation
     let result = table[0][0];
     let term = 1;
+    let eq = `f(x) = ${table[0][0].toFixed(4)}`;
+    
     for (let i = 1; i < n; i++) {
       term *= (findX - selectedData[i - 1].x);
       result += table[0][i] * term;
-    }
-    setResult(result);
-
-    // Generate equation string
-    let eq = `f(x) = ${table[0][0].toFixed(4)}`;
-    term = 1;
-    for (let i = 1; i < n; i++) {
+      
       const coefficient = table[0][i].toFixed(4);
       eq += ` + (${coefficient})`;
       for (let j = 0; j < i; j++) {
         eq += `(x - ${selectedData[j].x})`;
       }
     }
+    
+    setResult(result);
     setEquation(eq);
   };
 
@@ -92,88 +84,50 @@ const NewtonDividedDifference = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Newton's Divided Difference</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="md:col-span-1">
+      <div className="max-w-4xl mx-auto space-y-6">
+        <Card>
           <CardHeader>
-            <CardTitle>Input</CardTitle>
+            <CardTitle className="text-center">Input</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Find f(x) where x is:</Label>
-              <Input
-                type="number"
-                value={findX}
-                onChange={(e) => setFindX(parseFloat(e.target.value))}
-                placeholder="Enter x value"
+          <CardContent className="space-y-6">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-full max-w-md space-y-2">
+                <Label className="text-center block">Find f(x) where x is:</Label>
+                <Input
+                  type="number"
+                  value={findX}
+                  onChange={(e) => setFindX(parseFloat(e.target.value))}
+                  placeholder="Enter x value"
+                  className="text-center"
+                />
+              </div>
+              
+              <div className="w-full max-w-md space-y-2">
+                <Label className="text-center block">Points Amount:</Label>
+                <Input
+                  type="number"
+                  value={pointsAmount}
+                  onChange={handlePointsAmountChange}
+                  placeholder="Enter number of points"
+                  className="text-center"
+                />
+              </div>
+            </div>
+
+            <div className="overflow-x-auto">
+              <PointsTable 
+                points={points}
+                selectedPoints={selectedPoints}
+                onPointChange={handlePointChange}
+                onSelectionChange={handleSelectionChange}
               />
             </div>
 
-            <Dialog open={open} onOpenChange={setOpen}>
-              <DialogTrigger asChild>
-                <Button className="w-full">Set Points</Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-3xl">
-                <DialogHeader>
-                  <DialogTitle>Points Input</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-4">
-                    <Label>Points Amount:</Label>
-                    <Input
-                      type="number"
-                      value={pointsAmount}
-                      onChange={(e) => {
-                        setPointsAmount(parseInt(e.target.value));
-                        initializePoints(parseInt(e.target.value));
-                      }}
-                      className="w-24"
-                    />
-                  </div>
-                  
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Point</TableHead>
-                        <TableHead>x</TableHead>
-                        <TableHead>f(x)</TableHead>
-                        <TableHead>Select</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {points.map((point, i) => (
-                        <TableRow key={i}>
-                          <TableCell>{i + 1}</TableCell>
-                          <TableCell>
-                            <Input
-                              type="number"
-                              value={point.x}
-                              onChange={(e) => handlePointChange(i, 'x', e.target.value)}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Input
-                              type="number"
-                              value={point.fx}
-                              onChange={(e) => handlePointChange(i, 'fx', e.target.value)}
-                            />
-                          </TableCell>
-                          <TableCell>
-                            <Checkbox
-                              checked={selectedPoints[i]}
-                              onCheckedChange={() => handleSelectionChange(i)}
-                            />
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-              </DialogContent>
-            </Dialog>
-
-            <Button onClick={calculateDividedDifference} className="w-full">
-              Calculate
-            </Button>
+            <div className="flex justify-center">
+              <Button onClick={calculateDividedDifference} className="w-full max-w-md">
+                Calculate
+              </Button>
+            </div>
 
             {result !== null && (
               <div className="text-center font-semibold">
@@ -183,51 +137,29 @@ const NewtonDividedDifference = () => {
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>Solution</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {dividedDiffTable.length > 0 && (
-              <>
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Divided Difference Table</h3>
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>xi</TableHead>
-                        {Array(dividedDiffTable[0].length).fill(0).map((_, i) => (
-                          <TableHead key={i}>
-                            f[{Array(i + 1).fill(0).map((_, j) => `x${j + 1}`).join(', ')}]
-                          </TableHead>
-                        ))}
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {dividedDiffTable.map((row, i) => (
-                        <TableRow key={i}>
-                          <TableCell>{points[i].x}</TableCell>
-                          {row.map((val, j) => (
-                            <TableCell key={j}>
-                              {val ? val.toFixed(4) : ''}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
+        {dividedDiffTable.length > 0 && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-center">Solution</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div>
+                <h3 className="text-lg font-semibold mb-2 text-center">Divided Difference Table</h3>
+                <DividedDifferenceTable 
+                  dividedDiffTable={dividedDiffTable}
+                  points={points}
+                />
+              </div>
 
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Interpolation Equation</h3>
-                  <div className="p-4 bg-muted rounded-lg">
-                    {equation}
-                  </div>
+              <div>
+                <h3 className="text-lg font-semibold mb-2 text-center">Interpolation Equation</h3>
+                <div className="p-4 bg-muted rounded-lg text-center">
+                  {equation}
                 </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
