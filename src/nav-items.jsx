@@ -15,6 +15,7 @@ import CholeskyDecompositionMethods from "./pages/linear-algebra/CholeskyDecompo
 import JacobiIterationMethods from "./pages/linear-algebra/JacobiIterationMethods";
 import GaussSeidelMethods from "./pages/linear-algebra/GaussSeidelMethods";
 import ConjugateGradientMethods from "./pages/linear-algebra/ConjugateGradientMethods";
+import NewtonDividedDifference from "./pages/interpolation/NewtonDividedDifference";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -64,7 +65,11 @@ export const navItems = [
     page: <PlaceholderComponent title="Interpolation Equations" />,
     description: "Methods for estimating values between known data points",
     subItems: [
-      { title: "Newton's Divided Difference", to: "/interpolation/newtons-divided-difference", page: <PlaceholderComponent title="Newton's Divided Difference" /> },
+      { 
+        title: "Newton's Divided Difference", 
+        to: "/interpolation/newtons-divided-difference", 
+        page: <NewtonDividedDifference /> 
+      },
       { title: "Lagrange Interpolation", to: "/interpolation/lagrange", page: <PlaceholderComponent title="Lagrange Interpolation" /> },
       { title: "Spline Interpolation", to: "/interpolation/spline", page: <PlaceholderComponent title="Spline Interpolation" /> },
     ],
