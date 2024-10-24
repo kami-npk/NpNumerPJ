@@ -16,6 +16,7 @@ import JacobiIterationMethods from "./pages/linear-algebra/JacobiIterationMethod
 import GaussSeidelMethods from "./pages/linear-algebra/GaussSeidelMethods";
 import ConjugateGradientMethods from "./pages/linear-algebra/ConjugateGradientMethods";
 import NewtonDividedDifference from "./pages/interpolation/NewtonDividedDifference";
+import LagrangeInterpolation from "./pages/interpolation/LagrangeInterpolation";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -70,7 +71,11 @@ export const navItems = [
         to: "/interpolation/newtons-divided-difference", 
         page: <NewtonDividedDifference /> 
       },
-      { title: "Lagrange Interpolation", to: "/interpolation/lagrange", page: <PlaceholderComponent title="Lagrange Interpolation" /> },
+      { 
+        title: "Lagrange Interpolation", 
+        to: "/interpolation/lagrange", 
+        page: <LagrangeInterpolation /> 
+      },
       { title: "Spline Interpolation", to: "/interpolation/spline", page: <PlaceholderComponent title="Spline Interpolation" /> },
     ],
   },
