@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { PointsTable } from './components/PointsTable';
 import { DividedDifferenceTable } from './components/DividedDifferenceTable';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 const NewtonDividedDifference = () => {
   const [findX, setFindX] = useState(0);
@@ -14,14 +16,13 @@ const NewtonDividedDifference = () => {
   const [dividedDiffTable, setDividedDiffTable] = useState([]);
   const [result, setResult] = useState(null);
   const [equation, setEquation] = useState("");
+  const [answerEquation, setAnswerEquation] = useState("");
 
-  const handlePointsAmountChange = (e) => {
-    const amount = parseInt(e.target.value);
-    setPointsAmount(amount);
-    const newPoints = Array(amount).fill().map(() => ({ x: 0, fx: 0 }));
-    setPoints(newPoints);
-    setSelectedPoints(Array(amount).fill(false));
-  };
+  // Initialize points array when pointsAmount changes
+  useEffect(() => {
+    setPoints(Array(pointsAmount).fill().map(() => ({ x: 0, fx: 0 })));
+    setSelectedPoints(Array(pointsAmount).fill(false));
+  }, [pointsAmount]);
 
   const handlePointChange = (index, field, value) => {
     const newPoints = [...points];
@@ -82,56 +83,49 @@ const NewtonDividedDifference = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Newton's Divided Difference</h1>
+      <h1 className="text-3xl font-bold text-center mb-8">Newton's Divided Difference</h1>
       
       <div className="max-w-4xl mx-auto space-y-6">
         <Card>
           <CardHeader>
-            <CardTitle className="text-center">Input</CardTitle>
+            <CardTitle>Input</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
+          <CardContent className="space-y-4">
             <div className="flex flex-col items-center gap-4">
               <div className="w-full max-w-md space-y-2">
-                <Label className="text-center block">Find f(x) where x is:</Label>
+                <Label>Find f(x) where x is:</Label>
                 <Input
                   type="number"
                   value={findX}
                   onChange={(e) => setFindX(parseFloat(e.target.value))}
-                  placeholder="Enter x value"
-                  className="text-center"
                 />
               </div>
-              
+
               <div className="w-full max-w-md space-y-2">
-                <Label className="text-center block">Points Amount:</Label>
+                <Label>Points Amount:</Label>
                 <Input
                   type="number"
                   value={pointsAmount}
-                  onChange={handlePointsAmountChange}
-                  placeholder="Enter number of points"
-                  className="text-center"
+                  onChange={(e) => setPointsAmount(parseInt(e.target.value))}
+                  min="2"
                 />
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <PointsTable 
-                points={points}
-                selectedPoints={selectedPoints}
-                onPointChange={handlePointChange}
-                onSelectionChange={handleSelectionChange}
-              />
-            </div>
+            <PointsTable
+              points={points}
+              selectedPoints={selectedPoints}
+              onPointChange={handlePointChange}
+              onSelectionChange={handleSelectionChange}
+            />
 
-            <div className="flex justify-center">
-              <Button onClick={calculateDividedDifference} className="w-full max-w-md">
-                Calculate
-              </Button>
-            </div>
+            <Button onClick={calculateDividedDifference} className="w-full">
+              Calculate
+            </Button>
 
             {result !== null && (
               <div className="text-center font-semibold">
-                Result: {result.toFixed(4)}
+                Result: {typeof result === 'number' ? result.toFixed(4) : result}
               </div>
             )}
           </CardContent>

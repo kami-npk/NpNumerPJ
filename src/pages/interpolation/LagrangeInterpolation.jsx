@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { PointsTable } from './components/PointsTable';
+import katex from 'katex';
+import 'katex/dist/katex.min.css';
 
 const LagrangeInterpolation = () => {
   const [findX, setFindX] = useState(0);
@@ -12,8 +13,14 @@ const LagrangeInterpolation = () => {
   const [points, setPoints] = useState([]);
   const [selectedPoints, setSelectedPoints] = useState([]);
   const [result, setResult] = useState(null);
-  const [lagrangeTable, setLagrangeTable] = useState([]);
-  const [interpolationEquation, setInterpolationEquation] = useState("");
+  const [equation, setEquation] = useState("");
+  const [answerEquation, setAnswerEquation] = useState("");
+
+  // Initialize points array when pointsAmount changes
+  useEffect(() => {
+    setPoints(Array(pointsAmount).fill().map(() => ({ x: 0, fx: 0 })));
+    setSelectedPoints(Array(pointsAmount).fill(false));
+  }, [pointsAmount]);
 
   const handlePointChange = (index, field, value) => {
     const newPoints = [...points];
@@ -55,127 +62,73 @@ const LagrangeInterpolation = () => {
     }
 
     setResult(result);
-    setInterpolationEquation(equation.slice(0, -2));
-    setLagrangeTable(selectedData);
+    setEquation(equation.slice(0, -2));
   };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-6 text-center">Lagrange Interpolation</h1>
+      <h1 className="text-3xl font-bold text-center mb-8">Lagrange Interpolation</h1>
       
-      <div className="grid gap-6">
+      <div className="max-w-4xl mx-auto space-y-6">
         <Card>
           <CardHeader>
             <CardTitle>Input</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label className="text-left block">Find f(x) where x is:</Label>
+          <CardContent className="space-y-4">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-full max-w-md space-y-2">
+                <Label>Find f(x) where x is:</Label>
                 <Input
                   type="number"
                   value={findX}
                   onChange={(e) => setFindX(parseFloat(e.target.value))}
                 />
               </div>
-              
-              <div className="space-y-2">
-                <Label className="text-left block">Points Amount:</Label>
+
+              <div className="w-full max-w-md space-y-2">
+                <Label>Points Amount:</Label>
                 <Input
                   type="number"
                   value={pointsAmount}
-                  onChange={(e) => {
-                    const amount = parseInt(e.target.value);
-                    setPointsAmount(amount);
-                    setPoints(Array(amount).fill({ x: 0, fx: 0 }));
-                    setSelectedPoints(Array(amount).fill(false));
-                  }}
+                  onChange={(e) => setPointsAmount(parseInt(e.target.value))}
+                  min="2"
                 />
               </div>
-
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Point</TableHead>
-                    <TableHead>x</TableHead>
-                    <TableHead>f(x)</TableHead>
-                    <TableHead>Select</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {Array(pointsAmount).fill().map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell>{i + 1}</TableCell>
-                      <TableCell>
-                        <Input
-                          type="number"
-                          value={points[i]?.x || 0}
-                          onChange={(e) => handlePointChange(i, 'x', e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Input
-                          type="number"
-                          value={points[i]?.fx || 0}
-                          onChange={(e) => handlePointChange(i, 'fx', e.target.value)}
-                        />
-                      </TableCell>
-                      <TableCell>
-                        <Checkbox
-                          checked={selectedPoints[i] || false}
-                          onCheckedChange={() => handleSelectionChange(i)}
-                        />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
-              <Button onClick={calculateLagrange} className="w-full">
-                Calculate
-              </Button>
             </div>
+
+            <PointsTable
+              points={points}
+              selectedPoints={selectedPoints}
+              onPointChange={handlePointChange}
+              onSelectionChange={handleSelectionChange}
+            />
+
+            <Button onClick={calculateLagrange} className="w-full">
+              Calculate
+            </Button>
+
+            {result !== null && (
+              <div className="text-center font-semibold">
+                Result: {typeof result === 'number' ? result.toFixed(4) : result}
+              </div>
+            )}
           </CardContent>
         </Card>
 
-        {result !== null && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Solution</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>i</TableHead>
-                      <TableHead>xi</TableHead>
-                      <TableHead>f(xi)</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {lagrangeTable.map((point, i) => (
-                      <TableRow key={i}>
-                        <TableCell>{i + 1}</TableCell>
-                        <TableCell>{point.x}</TableCell>
-                        <TableCell>{point.fx}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-
-                <div>
-                  <h3 className="text-lg font-semibold mb-2">Interpolation Equation</h3>
-                  <p>{interpolationEquation}</p>
-                </div>
-
-                <div className="text-center">
-                  <p className="font-semibold">Result: {result.toFixed(4)}</p>
-                </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Solution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              <h3 className="text-lg font-semibold mb-2">Interpolation Equation</h3>
+              <p>{equation}</p>
+              <div className="text-center">
+                <p className="font-semibold">Result: {result !== null ? result.toFixed(4) : ''}</p>
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
