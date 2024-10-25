@@ -139,7 +139,11 @@ export const navItems = [
     page: <PlaceholderComponent title="Differential Equations" />,
     description: "Techniques for solving differential equations numerically",
     subItems: [
-      { title: "Numerical Differentiation", to: "/differential/numerical-differentiation", page: <PlaceholderComponent title="Numerical Differentiation" /> },
+      { 
+        title: "Numerical Differentiation", 
+        to: "/differential/numerical-differentiation", 
+        page: <NumericalDifferentiation /> 
+      },
     ],
   },
 ];
