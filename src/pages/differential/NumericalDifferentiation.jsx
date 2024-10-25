@@ -73,7 +73,14 @@ const NumericalDifferentiation = () => {
 
     // Calculate and format error with correct derivative notation
     const error = Math.abs((numericalResult - exactValue) / exactValue) * 100;
-    const errorLatex = `\\displaystyle e = \\left|\\frac{f${symbol}(x)_{numerical} - f${symbol}(x)_{true}}{f${symbol}(x)_{true}}\\right| \\times 100\\% = ${error.toFixed(4)}\\%`;
+    
+    // Get the correct derivative notation for the error formula based on order
+    let derivativeNotation = '';
+    for (let i = 0; i < parseInt(selectedOrder); i++) {
+      derivativeNotation += "'";
+    }
+    
+    const errorLatex = `\\displaystyle e = \\left|\\frac{f${derivativeNotation}(x)_{numerical} - f${derivativeNotation}(x)_{true}}{f${derivativeNotation}(x)_{true}}\\right| \\times 100\\% = ${error.toFixed(4)}\\%`;
 
     // Combine all latex parts
     const solutionLatex = `
