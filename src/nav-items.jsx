@@ -23,6 +23,7 @@ import MultipleRegression from "./pages/extrapolation/MultipleRegression";
 import PolynomialRegression from "./pages/extrapolation/PolynomialRegression";
 import TrapezoidalRule from "./pages/integration/TrapezoidalRule";
 import SimpsonRule from "./pages/integration/SimpsonRule";
+import NumericalDifferentiation from "./pages/differential/NumericalDifferentiation";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
