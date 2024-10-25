@@ -7,6 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { evaluate, derivative } from 'mathjs';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
+import { forwardCalculate, backwardCalculate, centerCalculate } from './components/DifferentiationCalculations';
+import { SolutionDisplay } from './components/SolutionDisplay';
 
 const NumericalDifferentiation = () => {
   const [equation, setEquation] = useState("");
@@ -21,58 +23,18 @@ const NumericalDifferentiation = () => {
     return evaluate(equation, { x });
   };
 
-  const forwardCalculate = (x, h) => {
-    let fxip1 = f(x + h);
-    let fxi = f(x);
-    return {
-      result: (fxip1 - fxi) / h,
-      formula: `f'(x) = [ f(x_{i+1}) - f(x_{i}) ] / h`
-    };
-  };
-
-  const backwardCalculate = (x, h) => {
-    let fxi = f(x);
-    let fxim1 = f(x - h);
-    return {
-      result: (fxi - fxim1) / h,
-      formula: `f'(x) = [ f(x_{i}) - f(x_{i-1}) ] / h`
-    };
-  };
-
-  const centerCalculate = (x, h) => {
-    let fxip1 = f(x + h);
-    let fxim1 = f(x - h);
-    return {
-      result: (fxip1 - fxim1) / (2 * h),
-      formula: `f'(x) = [ f(x_{i+1}) - f(x_{i-1}) ] / 2h`
-    };
-  };
-
   const calculateDifferentiation = () => {
     if (!equation || !x || !h) return;
 
     const xNum = parseFloat(x);
     const hNum = parseFloat(h);
     let titleLatex = '';
-    let formulaLatex = '';
-    let resultValue = 0;
-
-    switch (selectedOrder) {
-      case "1":
-        titleLatex = "First ";
-        break;
-      case "2":
-        titleLatex = "Second ";
-        break;
-      case "3":
-        titleLatex = "Third ";
-        break;
-      case "4":
-        titleLatex = "Fourth ";
-        break;
-    }
-
     let method;
+
+    // Set title based on order
+    titleLatex = ["First", "Second", "Third", "Fourth"][parseInt(selectedOrder) - 1] + " ";
+
+    // Set method and complete title based on direction
     switch (selectedDirection) {
       case "1":
         titleLatex += "Forward Divided-Differences ; O(h)";
@@ -86,13 +48,16 @@ const NumericalDifferentiation = () => {
         titleLatex += "Central Divided-Differences ; O(h^2)";
         method = centerCalculate;
         break;
+      default:
+        return;
     }
 
-    const { result: numericalResult, formula } = method(xNum, hNum);
-    resultValue = numericalResult;
-
+    // Calculate numerical result
+    const { result: numericalResult, formula } = method(f, xNum, hNum, selectedOrder);
+    
+    // Calculate exact derivatives and build latex string
     let diffEquation = equation;
-    let exactDiffLatex = `Exact Differentiation of f(x) = ${equation}\\\\`;
+    let exactDiffLatex = `Exact\\ Differentiation\\ of\\ f(x) = ${equation}\\\\`;
     let symbol = "'";
     
     for (let i = 1; i <= parseInt(selectedOrder); i++) {
@@ -101,12 +66,16 @@ const NumericalDifferentiation = () => {
       symbol += "'";
     }
 
+    // Calculate exact value and add to latex
     const exactValue = evaluate(diffEquation, { x: xNum });
-    exactDiffLatex += `At\\ x = ${xNum}\\ ;\\ f${symbol}(${xNum}) = ${exactValue}`;
+    exactDiffLatex += `At\\ x = ${xNum}\\ ;\\ f${symbol}(${xNum}) = ${exactValue}\\\\`;
+    exactDiffLatex += `f${symbol}(${xNum}) = ${numericalResult}`;
 
-    const error = Math.abs((resultValue - exactValue) / exactValue) * 100;
+    // Calculate and format error
+    const error = Math.abs((numericalResult - exactValue) / exactValue) * 100;
     const errorLatex = `\\displaystyle error = \\left|\\frac{f${symbol}(x)_{numerical} - f${symbol}(x)_{true}}{f${symbol}(x)_{true}}\\right| \\times 100\\% = ${error.toFixed(4)}\\%`;
 
+    // Combine all latex parts
     const solutionLatex = `
       ${titleLatex}\\\\
       ${formula}\\\\
@@ -114,13 +83,14 @@ const NumericalDifferentiation = () => {
       ${errorLatex}
     `;
 
+    // Render solution
     const renderedSolution = katex.renderToString(solutionLatex, {
       displayMode: true,
       throwOnError: false,
     });
 
     setSolution(renderedSolution);
-    setResult(resultValue);
+    setResult(numericalResult);
   };
 
   return (
@@ -204,16 +174,7 @@ const NumericalDifferentiation = () => {
         </CardContent>
       </Card>
 
-      {solution && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Solution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="katex-solution" dangerouslySetInnerHTML={{ __html: solution }} />
-          </CardContent>
-        </Card>
-      )}
+      <SolutionDisplay solution={solution} />
     </div>
   );
 };
