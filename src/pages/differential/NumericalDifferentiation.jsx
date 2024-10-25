@@ -71,9 +71,9 @@ const NumericalDifferentiation = () => {
     exactDiffLatex += `At\\ x = ${xNum}\\ ;\\ f${symbol}(${xNum}) = ${exactValue}\\\\`;
     exactDiffLatex += `f${symbol}(${xNum}) = ${numericalResult}`;
 
-    // Calculate and format error
+    // Calculate and format error with correct derivative notation
     const error = Math.abs((numericalResult - exactValue) / exactValue) * 100;
-    const errorLatex = `\\displaystyle error = \\left|\\frac{f${symbol}(x)_{numerical} - f${symbol}(x)_{true}}{f${symbol}(x)_{true}}\\right| \\times 100\\% = ${error.toFixed(4)}\\%`;
+    const errorLatex = `\\displaystyle e = \\left|\\frac{f${symbol}(x)_{numerical} - f${symbol}(x)_{true}}{f${symbol}(x)_{true}}\\right| \\times 100\\% = ${error.toFixed(4)}\\%`;
 
     // Combine all latex parts
     const solutionLatex = `
