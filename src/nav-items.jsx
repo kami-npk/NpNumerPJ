@@ -22,6 +22,7 @@ import LinearRegression from "./pages/extrapolation/LinearRegression";
 import MultipleRegression from "./pages/extrapolation/MultipleRegression";
 import PolynomialRegression from "./pages/extrapolation/PolynomialRegression";
 import TrapezoidalRule from "./pages/integration/TrapezoidalRule";
+import SimpsonRule from "./pages/integration/SimpsonRule";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -123,6 +124,11 @@ export const navItems = [
         title: "Trapezoidal Rule", 
         to: "/integration/trapezoidal", 
         page: <TrapezoidalRule /> 
+      },
+      { 
+        title: "Simpson's Rule", 
+        to: "/integration/simpson", 
+        page: <SimpsonRule /> 
       }
     ],
   },
