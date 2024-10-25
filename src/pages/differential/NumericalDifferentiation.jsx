@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { evaluate, derivative } from 'mathjs';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
@@ -83,7 +84,7 @@ const NumericalDifferentiation = () => {
     }
   };
 
-  return (
+return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <h1 className="text-3xl font-bold text-center mb-8">Numerical Differentiation</h1>
       
@@ -165,14 +166,14 @@ const NumericalDifferentiation = () => {
       </Card>
 
       {solution && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Solution</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div dangerouslySetInnerHTML={{ __html: solution }} />
-          </CardContent>
-        </Card>
+        <Accordion type="single" collapsible className="w-full">
+          <AccordionItem value="solution">
+            <AccordionTrigger>Solution</AccordionTrigger>
+            <AccordionContent>
+              <div className="p-4" dangerouslySetInnerHTML={{ __html: solution }} />
+            </AccordionContent>
+          </AccordionItem>
+        </Accordion>
       )}
     </div>
   );
