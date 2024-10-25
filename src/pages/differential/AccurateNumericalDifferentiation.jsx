@@ -81,22 +81,26 @@ const AccurateNumericalDifferentiation = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8">Accurate Numerical Differentiation</h1>
       
-      <AccurateDifferentiationForm
-        equation={equation}
-        x={x}
-        h={h}
-        selectedOrder={selectedOrder}
-        selectedDirection={selectedDirection}
-        setEquation={setEquation}
-        setX={setX}
-        setH={setH}
-        setSelectedOrder={setSelectedOrder}
-        setSelectedDirection={setSelectedDirection}
-        onCalculate={calculateDifferentiation}
-        result={result}
-      />
+      <div className="max-w-4xl mx-auto space-y-6">
+        <div className="max-w-md mx-auto">
+          <AccurateDifferentiationForm
+            equation={equation}
+            x={x}
+            h={h}
+            selectedOrder={selectedOrder}
+            selectedDirection={selectedDirection}
+            setEquation={setEquation}
+            setX={setX}
+            setH={setH}
+            setSelectedOrder={setSelectedOrder}
+            setSelectedDirection={setSelectedDirection}
+            onCalculate={calculateDifferentiation}
+            result={result}
+          />
+        </div>
 
-      <SolutionDisplay solution={solution} />
+        <SolutionDisplay solution={solution} />
+      </div>
     </div>
   );
 };
