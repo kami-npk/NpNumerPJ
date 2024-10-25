@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 
-export const InputForm = ({ equation, a, b, n, onEquationChange, onAChange, onBChange, onNChange, onCalculate, onGetEquation, result }) => {
+export const InputForm = ({ equation, a, b, n, onEquationChange, onAChange, onBChange, onNChange, onCalculate, result }) => {
   return (
     <Card>
       <CardHeader>
@@ -47,10 +47,7 @@ export const InputForm = ({ equation, a, b, n, onEquationChange, onAChange, onBC
             onChange={(e) => onNChange(e.target.value)}
           />
         </div>
-        <div className="flex flex-col gap-2">
-          <Button onClick={onGetEquation}>Get Example</Button>
-          <Button onClick={onCalculate}>Calculate</Button>
-        </div>
+        <Button onClick={onCalculate} className="w-full">Calculate</Button>
         {result !== null && (
           <div className="text-center font-semibold">
             Area: {result.toPrecision(7)}

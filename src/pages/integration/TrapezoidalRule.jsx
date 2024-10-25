@@ -14,21 +14,6 @@ const TrapezoidalRule = () => {
   const [result, setResult] = useState(null);
   const [solution, setSolution] = useState("");
 
-  const getEquationApi = async () => {
-    try {
-      const response = await fetch("https://pj-numer-api.onrender.com/integrateData/random");
-      const data = await response.json();
-      if (data) {
-        setEquation(data.fx);
-        setA(parseFloat(data.a).toFixed(4));
-        setB(parseFloat(data.b).toFixed(4));
-        setN(parseFloat(data.n));
-      }
-    } catch (error) {
-      console.error("Failed to fetch equation:", error);
-    }
-  };
-
   const handleCalculate = () => {
     const aNum = parseFloat(a);
     const bNum = parseFloat(b);
@@ -99,8 +84,8 @@ const TrapezoidalRule = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-center mb-8">Trapezoidal Rule</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div>
+      <div className="flex flex-col items-center space-y-8">
+        <div className="w-full max-w-md">
           <InputForm
             equation={equation}
             a={a}
@@ -111,22 +96,21 @@ const TrapezoidalRule = () => {
             onBChange={setB}
             onNChange={setN}
             onCalculate={handleCalculate}
-            onGetEquation={getEquationApi}
             result={result}
           />
         </div>
         
-        <div className="md:col-span-2 space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Graph</CardTitle>
-            </CardHeader>
-            <CardContent className="flex justify-center">
-              {renderGraph()}
-            </CardContent>
-          </Card>
+        {(solution || result) && (
+          <div className="w-full space-y-8">
+            <Card>
+              <CardHeader>
+                <CardTitle>Graph</CardTitle>
+              </CardHeader>
+              <CardContent className="flex justify-center">
+                {renderGraph()}
+              </CardContent>
+            </Card>
 
-          {solution && (
             <Card>
               <CardHeader>
                 <CardTitle>Solution</CardTitle>
@@ -135,8 +119,8 @@ const TrapezoidalRule = () => {
                 <div className="text-center" dangerouslySetInnerHTML={{ __html: solution }} />
               </CardContent>
             </Card>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
