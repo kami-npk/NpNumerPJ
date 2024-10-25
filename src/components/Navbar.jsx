@@ -8,7 +8,11 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center pl-0">
-              <span className="text-2xl font-extrabold text-discord-interactive-active tracking-tighter">N/P</span>
+              <div className="flex flex-col items-center leading-none text-lg font-semibold text-discord-interactive-active">
+                <span>N</span>
+                <span className="rotate-12">/</span>
+                <span>P</span>
+              </div>
             </Link>
           </div>
         </div>
