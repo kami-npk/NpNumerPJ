@@ -21,6 +21,7 @@ import SplineInterpolation from "./pages/interpolation/SplineInterpolation";
 import LinearRegression from "./pages/extrapolation/LinearRegression";
 import MultipleRegression from "./pages/extrapolation/MultipleRegression";
 import PolynomialRegression from "./pages/extrapolation/PolynomialRegression";
+import TrapezoidalRule from "./pages/integration/TrapezoidalRule";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -118,10 +119,11 @@ export const navItems = [
     page: <PlaceholderComponent title="Integration Equations" />,
     description: "Methods for numerical integration",
     subItems: [
-      { title: "Single Trapezoidal Rule", to: "/integration/single-trapezoidal", page: <PlaceholderComponent title="Single Trapezoidal Rule" /> },
-      { title: "Composite Trapezoidal Rule", to: "/integration/composite-trapezoidal", page: <PlaceholderComponent title="Composite Trapezoidal Rule" /> },
-      { title: "Single Simpson's Rule", to: "/integration/single-simpson", page: <PlaceholderComponent title="Single Simpson's Rule" /> },
-      { title: "Composite Simpson's Rule", to: "/integration/composite-simpson", page: <PlaceholderComponent title="Composite Simpson's Rule" /> },
+      { 
+        title: "Trapezoidal Rule", 
+        to: "/integration/trapezoidal", 
+        page: <TrapezoidalRule /> 
+      }
     ],
   },
   {
