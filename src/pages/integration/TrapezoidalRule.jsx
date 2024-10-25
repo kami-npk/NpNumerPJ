@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { InputForm } from './components/InputForm';
-import { calculateTrapezoidalArea, generateGraphData } from './components/TrapezoidalCalculation';
-import Plot from 'react-plotly.js';
+import { calculateTrapezoidalArea } from './components/TrapezoidalCalculation';
+import { TrapezoidalGraph } from './components/TrapezoidalGraph';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
 
@@ -17,67 +17,11 @@ const TrapezoidalRule = () => {
   const handleCalculate = () => {
     const aNum = parseFloat(a);
     const bNum = parseFloat(b);
-    const nNum = parseFloat(n);
+    const nNum = parseInt(n);
     
     const { area, solutionLatex } = calculateTrapezoidalArea(equation, aNum, bNum, nNum);
     setResult(area);
     setSolution(katex.renderToString(solutionLatex, { throwOnError: false }));
-  };
-
-  const renderGraph = () => {
-    if (!equation || !a || !b || !n) return null;
-    
-    const { xValues, yValues, segments } = generateGraphData(equation, parseFloat(a), parseFloat(b), parseFloat(n));
-    
-    const shapes = segments.flatMap(segment => ([
-      {
-        type: 'line',
-        x0: segment.start.x,
-        x1: segment.start.x,
-        y0: 0,
-        y1: segment.start.y,
-        line: { color: '#117554', width: 1, dash: 'dot' }
-      },
-      {
-        type: 'line',
-        x0: segment.end.x,
-        x1: segment.end.x,
-        y0: 0,
-        y1: segment.end.y,
-        line: { color: '#117554', width: 1, dash: 'dot' }
-      },
-      {
-        type: 'line',
-        x0: segment.start.x,
-        x1: segment.end.x,
-        y0: segment.start.y,
-        y1: segment.end.y,
-        line: { color: '#117554', width: 1, dash: 'dot' }
-      }
-    ]));
-
-    return (
-      <Plot
-        data={[
-          {
-            x: xValues,
-            y: yValues,
-            type: 'scatter',
-            mode: 'lines',
-            name: 'f(x)',
-            line: { color: '#5045e5' }
-          }
-        ]}
-        layout={{
-          width: 800,
-          height: 400,
-          title: 'Trapezoidal Rule Integration',
-          shapes,
-          xaxis: { title: 'x' },
-          yaxis: { title: 'f(x)' }
-        }}
-      />
-    );
   };
 
   return (
@@ -107,7 +51,12 @@ const TrapezoidalRule = () => {
                 <CardTitle>Graph</CardTitle>
               </CardHeader>
               <CardContent className="flex justify-center">
-                {renderGraph()}
+                <TrapezoidalGraph
+                  equation={equation}
+                  a={parseFloat(a)}
+                  b={parseFloat(b)}
+                  n={parseInt(n)}
+                />
               </CardContent>
             </Card>
 
