@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { evaluate, derivative } from 'mathjs';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
@@ -13,10 +12,10 @@ const NumericalDifferentiation = () => {
   const [equation, setEquation] = useState("");
   const [x, setX] = useState("");
   const [h, setH] = useState("");
-  const [result, setResult] = useState(null);
   const [selectedOrder, setSelectedOrder] = useState("1");
   const [selectedDirection, setSelectedDirection] = useState("1");
   const [solution, setSolution] = useState(null);
+  const [result, setResult] = useState(null);
 
   const f = (x) => {
     return evaluate(equation, { x });
@@ -25,66 +24,106 @@ const NumericalDifferentiation = () => {
   const forwardCalculate = (x, h) => {
     let fxip1 = f(x + h);
     let fxi = f(x);
-    return (fxip1 - fxi) / h;
+    return {
+      result: (fxip1 - fxi) / h,
+      formula: `f'(x) = [ f(x_{i+1}) - f(x_{i}) ] / h`
+    };
   };
 
   const backwardCalculate = (x, h) => {
     let fxi = f(x);
     let fxim1 = f(x - h);
-    return (fxi - fxim1) / h;
+    return {
+      result: (fxi - fxim1) / h,
+      formula: `f'(x) = [ f(x_{i}) - f(x_{i-1}) ] / h`
+    };
   };
 
   const centerCalculate = (x, h) => {
     let fxip1 = f(x + h);
     let fxim1 = f(x - h);
-    return (fxip1 - fxim1) / (2 * h);
+    return {
+      result: (fxip1 - fxim1) / (2 * h),
+      formula: `f'(x) = [ f(x_{i+1}) - f(x_{i-1}) ] / 2h`
+    };
   };
 
   const calculateDifferentiation = () => {
+    if (!equation || !x || !h) return;
+
     const xNum = parseFloat(x);
     const hNum = parseFloat(h);
-    let calculatedResult;
-    let solutionLatex = '';
+    let titleLatex = '';
+    let formulaLatex = '';
+    let resultValue = 0;
 
-    try {
-      switch (selectedDirection) {
-        case "1": // Forward
-          calculatedResult = forwardCalculate(xNum, hNum);
-          break;
-        case "2": // Backward
-          calculatedResult = backwardCalculate(xNum, hNum);
-          break;
-        case "3": // Central
-          calculatedResult = centerCalculate(xNum, hNum);
-          break;
-      }
-
-      // Calculate exact derivative for comparison
-      let diffEquation = equation;
-      for (let i = 0; i < parseInt(selectedOrder); i++) {
-        diffEquation = derivative(diffEquation, 'x').toString();
-      }
-      const exactResult = evaluate(diffEquation, { x: xNum });
-      const error = Math.abs((calculatedResult - exactResult) / exactResult) * 100;
-
-      const orderText = ["First", "Second", "Third", "Fourth"][parseInt(selectedOrder) - 1];
-      const directionText = ["Forward", "Backward", "Central"][parseInt(selectedDirection) - 1];
-
-      solutionLatex = `${orderText} ${directionText} Divided-Differences ; O(h${selectedDirection === "3" ? "^2" : ""})
-        \\[${calculatedResult}\\]
-        \\text{Exact Differentiation of } f(x) = ${equation}
-        \\[f^{(${selectedOrder})}(x) = ${diffEquation}\\]
-        \\text{At } x = ${xNum} \\text{ ; } f^{(${selectedOrder})}(${xNum}) = ${exactResult}
-        \\[\\text{error} = \\left|\\frac{f^{(${selectedOrder})}(x)_{numerical} - f^{(${selectedOrder})}(x)_{true}}{f^{(${selectedOrder})}(x)_{true}}\\right| \\times 100\\% = ${error.toFixed(4)}\\%\\]`;
-
-      setResult(calculatedResult);
-      setSolution(katex.renderToString(solutionLatex, { displayMode: true }));
-    } catch (error) {
-      console.error('Calculation error:', error);
+    switch (selectedOrder) {
+      case "1":
+        titleLatex = "First ";
+        break;
+      case "2":
+        titleLatex = "Second ";
+        break;
+      case "3":
+        titleLatex = "Third ";
+        break;
+      case "4":
+        titleLatex = "Fourth ";
+        break;
     }
+
+    let method;
+    switch (selectedDirection) {
+      case "1":
+        titleLatex += "Forward Divided-Differences ; O(h)";
+        method = forwardCalculate;
+        break;
+      case "2":
+        titleLatex += "Backward Divided-Differences ; O(h)";
+        method = backwardCalculate;
+        break;
+      case "3":
+        titleLatex += "Central Divided-Differences ; O(h^2)";
+        method = centerCalculate;
+        break;
+    }
+
+    const { result: numericalResult, formula } = method(xNum, hNum);
+    resultValue = numericalResult;
+
+    let diffEquation = equation;
+    let exactDiffLatex = `Exact Differentiation of f(x) = ${equation}\\\\`;
+    let symbol = "'";
+    
+    for (let i = 1; i <= parseInt(selectedOrder); i++) {
+      diffEquation = derivative(diffEquation, 'x').toString();
+      exactDiffLatex += `f${symbol}(x) = ${diffEquation}\\\\`;
+      symbol += "'";
+    }
+
+    const exactValue = evaluate(diffEquation, { x: xNum });
+    exactDiffLatex += `At\\ x = ${xNum}\\ ;\\ f${symbol}(${xNum}) = ${exactValue}`;
+
+    const error = Math.abs((resultValue - exactValue) / exactValue) * 100;
+    const errorLatex = `\\displaystyle error = \\left|\\frac{f${symbol}(x)_{numerical} - f${symbol}(x)_{true}}{f${symbol}(x)_{true}}\\right| \\times 100\\% = ${error.toFixed(4)}\\%`;
+
+    const solutionLatex = `
+      ${titleLatex}\\\\
+      ${formula}\\\\
+      ${exactDiffLatex}\\\\
+      ${errorLatex}
+    `;
+
+    const renderedSolution = katex.renderToString(solutionLatex, {
+      displayMode: true,
+      throwOnError: false,
+    });
+
+    setSolution(renderedSolution);
+    setResult(resultValue);
   };
 
-return (
+  return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <h1 className="text-3xl font-bold text-center mb-8">Numerical Differentiation</h1>
       
@@ -166,14 +205,14 @@ return (
       </Card>
 
       {solution && (
-        <Accordion type="single" collapsible className="w-full">
-          <AccordionItem value="solution">
-            <AccordionTrigger>Solution</AccordionTrigger>
-            <AccordionContent>
-              <div className="p-4" dangerouslySetInnerHTML={{ __html: solution }} />
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
+        <Card>
+          <CardHeader>
+            <CardTitle>Solution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="katex-solution" dangerouslySetInnerHTML={{ __html: solution }} />
+          </CardContent>
+        </Card>
       )}
     </div>
   );
