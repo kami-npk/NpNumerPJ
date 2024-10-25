@@ -8,7 +8,7 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center pl-0">
-              <span className="text-xl font-bold text-discord-interactive-active">Home</span>
+              <span className="text-2xl font-extrabold text-discord-interactive-active tracking-tighter">N/P</span>
             </Link>
           </div>
         </div>
