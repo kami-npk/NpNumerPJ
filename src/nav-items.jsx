@@ -24,6 +24,7 @@ import PolynomialRegression from "./pages/extrapolation/PolynomialRegression";
 import TrapezoidalRule from "./pages/integration/TrapezoidalRule";
 import SimpsonRule from "./pages/integration/SimpsonRule";
 import NumericalDifferentiation from "./pages/differential/NumericalDifferentiation";
+import AccurateNumericalDifferentiation from "./pages/differential/AccurateNumericalDifferentiation";
 
 export const PlaceholderComponent = ({ title }) => (
   <div className="p-4">
@@ -144,6 +145,11 @@ export const navItems = [
         title: "Numerical Differentiation", 
         to: "/differential/numerical-differentiation", 
         page: <NumericalDifferentiation /> 
+      },
+      { 
+        title: "Accurate Numerical Differentiation", 
+        to: "/differential/accurate-numerical-differentiation", 
+        page: <AccurateNumericalDifferentiation /> 
       },
     ],
   },
