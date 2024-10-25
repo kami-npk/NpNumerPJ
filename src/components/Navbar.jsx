@@ -8,9 +8,9 @@ const Navbar = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center pl-0">
-              <div className="flex flex-col items-center leading-none text-2xl font-light text-discord-interactive-active relative">
+              <div className="flex flex-col items-center leading-none text-xl font-light text-discord-interactive-active relative hover:text-blue-500 transition-colors">
                 <span className="mb-1 transform -translate-x-1">N</span>
-                <span className="absolute top-1/2 -translate-y-1/2 rotate-45 text-3xl transform translate-x-0.5">/</span>
+                <span className="absolute top-1/2 -translate-y-1/2 rotate-45 text-2xl transform translate-x-0.5">/</span>
                 <span className="mt-1 transform translate-x-1">P</span>
               </div>
             </Link>
