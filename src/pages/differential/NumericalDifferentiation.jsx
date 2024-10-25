@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { evaluate, derivative } from 'mathjs';
 import katex from 'katex';
 import 'katex/dist/katex.min.css';
-import { NumericalDifferentiationForm } from './components/NumericalDifferentiationForm';
 
 const NumericalDifferentiation = () => {
   const [equation, setEquation] = useState("");
@@ -18,6 +21,24 @@ const NumericalDifferentiation = () => {
     return evaluate(equation, { x });
   };
 
+  const forwardCalculate = (x, h) => {
+    let fxip1 = f(x + h);
+    let fxi = f(x);
+    return (fxip1 - fxi) / h;
+  };
+
+  const backwardCalculate = (x, h) => {
+    let fxi = f(x);
+    let fxim1 = f(x - h);
+    return (fxi - fxim1) / h;
+  };
+
+  const centerCalculate = (x, h) => {
+    let fxip1 = f(x + h);
+    let fxim1 = f(x - h);
+    return (fxip1 - fxim1) / (2 * h);
+  };
+
   const calculateDifferentiation = () => {
     const xNum = parseFloat(x);
     const hNum = parseFloat(h);
@@ -27,13 +48,13 @@ const NumericalDifferentiation = () => {
     try {
       switch (selectedDirection) {
         case "1": // Forward
-          calculatedResult = calculateForward(xNum, hNum);
+          calculatedResult = forwardCalculate(xNum, hNum);
           break;
         case "2": // Backward
-          calculatedResult = calculateBackward(xNum, hNum);
+          calculatedResult = backwardCalculate(xNum, hNum);
           break;
         case "3": // Central
-          calculatedResult = calculateCentral(xNum, hNum);
+          calculatedResult = centerCalculate(xNum, hNum);
           break;
       }
 
@@ -45,15 +66,15 @@ const NumericalDifferentiation = () => {
       const exactResult = evaluate(diffEquation, { x: xNum });
       const error = Math.abs((calculatedResult - exactResult) / exactResult) * 100;
 
-      solutionLatex = `\\begin{aligned}
-        &\\text{Order: ${getOrderText(selectedOrder)}} \\\\
-        &\\text{Direction: ${getDirectionText(selectedDirection)}} \\\\
-        &f(x) = ${equation} \\\\
-        &f^{(${selectedOrder})}(x) = ${diffEquation} \\\\
-        &\\text{Numerical result: } ${calculatedResult.toFixed(6)} \\\\
-        &\\text{Exact result: } ${exactResult.toFixed(6)} \\\\
-        &\\text{Error: } ${error.toFixed(2)}\\%
-      \\end{aligned}`;
+      const orderText = ["First", "Second", "Third", "Fourth"][parseInt(selectedOrder) - 1];
+      const directionText = ["Forward", "Backward", "Central"][parseInt(selectedDirection) - 1];
+
+      solutionLatex = `${orderText} ${directionText} Divided-Differences ; O(h${selectedDirection === "3" ? "^2" : ""})
+        \\[${calculatedResult}\\]
+        \\text{Exact Differentiation of } f(x) = ${equation}
+        \\[f^{(${selectedOrder})}(x) = ${diffEquation}\\]
+        \\text{At } x = ${xNum} \\text{ ; } f^{(${selectedOrder})}(${xNum}) = ${exactResult}
+        \\[\\text{error} = \\left|\\frac{f^{(${selectedOrder})}(x)_{numerical} - f^{(${selectedOrder})}(x)_{true}}{f^{(${selectedOrder})}(x)_{true}}\\right| \\times 100\\% = ${error.toFixed(4)}\\%\\]`;
 
       setResult(calculatedResult);
       setSolution(katex.renderToString(solutionLatex, { displayMode: true }));
@@ -62,80 +83,97 @@ const NumericalDifferentiation = () => {
     }
   };
 
-  const getOrderText = (order) => {
-    const orders = { "1": "First", "2": "Second", "3": "Third", "4": "Fourth" };
-    return orders[order] || order;
-  };
-
-  const getDirectionText = (direction) => {
-    const directions = { "1": "Forward", "2": "Backward", "3": "Central" };
-    return directions[direction] || direction;
-  };
-
-  const calculateForward = (x, h) => {
-    let fxip1 = f(x + h);
-    let fxi = f(x);
-    return (fxip1 - fxi) / h;
-  };
-
-  const calculateBackward = (x, h) => {
-    let fxi = f(x);
-    let fxim1 = f(x - h);
-    return (fxi - fxim1) / h;
-  };
-
-  const calculateCentral = (x, h) => {
-    let fxip1 = f(x + h);
-    let fxim1 = f(x - h);
-    return (fxip1 - fxim1) / (2 * h);
-  };
-
-  const getEquationFromApi = async () => {
-    try {
-      const response = await fetch("https://pj-numer-api.onrender.com/differentiateData/random");
-      const data = await response.json();
-      if (data) {
-        setEquation(data.fx);
-        setX(data.x.toString());
-        setH(data.h.toString());
-      }
-    } catch (error) {
-      console.error('Failed to fetch equation:', error);
-    }
-  };
-
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 max-w-4xl">
       <h1 className="text-3xl font-bold text-center mb-8">Numerical Differentiation</h1>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <NumericalDifferentiationForm
-          equation={equation}
-          x={x}
-          h={h}
-          selectedOrder={selectedOrder}
-          selectedDirection={selectedDirection}
-          onEquationChange={setEquation}
-          onXChange={setX}
-          onHChange={setH}
-          onOrderChange={setSelectedOrder}
-          onDirectionChange={setSelectedDirection}
-          onCalculate={calculateDifferentiation}
-          onGetEquation={getEquationFromApi}
-          result={result}
-        />
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle>Input</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Select Order</Label>
+              <Select value={selectedOrder} onValueChange={setSelectedOrder}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select order" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">First</SelectItem>
+                  <SelectItem value="2">Second</SelectItem>
+                  <SelectItem value="3">Third</SelectItem>
+                  <SelectItem value="4">Fourth</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        {solution && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Solution</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div dangerouslySetInnerHTML={{ __html: solution }} />
-            </CardContent>
-          </Card>
-        )}
-      </div>
+            <div className="space-y-2">
+              <Label>Select Direction</Label>
+              <Select value={selectedDirection} onValueChange={setSelectedDirection}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select direction" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="1">Forward</SelectItem>
+                  <SelectItem value="2">Backward</SelectItem>
+                  <SelectItem value="3">Central</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>Input Equation f(x)</Label>
+            <Input
+              value={equation}
+              onChange={(e) => setEquation(e.target.value)}
+              placeholder="e.g., x^2"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Input x</Label>
+              <Input
+                type="number"
+                value={x}
+                onChange={(e) => setX(e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Input h</Label>
+              <Input
+                type="number"
+                value={h}
+                onChange={(e) => setH(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <Button onClick={calculateDifferentiation} className="w-full">
+            Solve
+          </Button>
+
+          {result !== null && (
+            <div className="text-center font-semibold">
+              Result: {result}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {solution && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Solution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div dangerouslySetInnerHTML={{ __html: solution }} />
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
