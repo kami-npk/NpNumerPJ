@@ -33,6 +33,14 @@ const SecantMethods = () => {
     const EPSILON = 0.000001;
 
     try {
+      // Add initial values as first iteration
+      newIterations.push({
+        iteration: iter,
+        xold: x0Num,
+        xnew: x1Num,
+        error: 100 // Initial error
+      });
+
       do {
         const fXold = evaluate(equation, { x: xOld });
         const fXnew = evaluate(equation, { x: xNew });
@@ -43,8 +51,8 @@ const SecantMethods = () => {
         iter++;
         newIterations.push({
           iteration: iter,
-          xold: xOld,
-          xnew: xNew,
+          xold: xNew, // Previous xNew becomes xOld
+          xnew: x,    // New x becomes xNew
           error: currentError
         });
         
