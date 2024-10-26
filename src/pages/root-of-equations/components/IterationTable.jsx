@@ -14,8 +14,12 @@ export const IterationTable = ({ data }) => (
       {data.map((row, index) => (
         <TableRow key={index}>
           <TableCell>{row.iteration}</TableCell>
-          <TableCell>{row.x.toPrecision(7)}</TableCell>
-          <TableCell>{row.error.toPrecision(7)}</TableCell>
+          <TableCell>
+            {row.x != null ? row.x.toPrecision(7) : 'N/A'}
+          </TableCell>
+          <TableCell>
+            {row.error != null ? row.error.toPrecision(7) : 'N/A'}
+          </TableCell>
         </TableRow>
       ))}
     </TableBody>
