@@ -10,42 +10,65 @@ export const useCalculation = () => {
   const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
   const calculateRoot = (equation, x0) => {
-    let x = x0;
+    let x = parseFloat(x0);
     let iter = 0;
     const MAX_ITER = 50;
     const EPSILON = 0.000001;
     const newIterations = [];
     const newErrorData = [];
+    const newGraphData = [];
 
-    do {
-      const xNew = evaluate(equation, { x });
-      const ea = error(x, xNew);
+    try {
+      // Generate graph data first
+      const xMin = x - 10;
+      const xMax = x + 10;
+      const step = (xMax - xMin) / 100;
       
-      iter++;
-      newIterations.push({ iteration: iter, x: xNew, error: ea });
-      newErrorData.push({ iteration: iter, error: ea });
-      
-      if (ea < EPSILON) {
-        setResult(xNew);
-        break;
+      for (let xi = xMin; xi <= xMax; xi += step) {
+        try {
+          const y = evaluate(equation, { x: xi });
+          newGraphData.push({ x: xi, y });
+        } catch (error) {
+          console.error('Error evaluating equation for graph:', error);
+        }
       }
-      
-      x = xNew;
-    } while (iter < MAX_ITER);
 
-    setIterations(newIterations);
-    setErrorData(newErrorData);
+      // Calculate iterations
+      let xOld = x;
+      do {
+        const xNew = evaluate(equation, { x });
+        const ea = error(x, xNew);
+        
+        iter++;
+        newIterations.push({ 
+          iteration: iter, 
+          x: xNew,
+          error: ea 
+        });
+        newErrorData.push({ 
+          iteration: iter, 
+          error: ea 
+        });
+        
+        if (ea < EPSILON || iter >= MAX_ITER) {
+          setResult(xNew);
+          break;
+        }
+        
+        xOld = x;
+        x = xNew;
+      } while (true);
 
-    // Generate equation graph data
-    const graphData = [];
-    const step = 0.1;
-    for (let x = -5; x <= 5; x += step) {
-      graphData.push({
-        x,
-        y: evaluate(equation, { x })
-      });
+      setIterations(newIterations);
+      setErrorData(newErrorData);
+      setGraphData(newGraphData);
+    } catch (error) {
+      console.error('Error in calculation:', error);
+      setResult(null);
+      setIterations([]);
+      setErrorData([]);
+      setGraphData([]);
     }
-    setGraphData(graphData);
   };
 
   return { result, iterations, graphData, errorData, calculateRoot };

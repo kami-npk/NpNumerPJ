@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { evaluate } from 'mathjs';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +15,8 @@ const OnePointMethods = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    calculateRoot(equation, parseFloat(initialX));
+    if (!equation || !initialX) return;
+    calculateRoot(equation, initialX);
   };
 
   return (
@@ -61,7 +61,7 @@ const OnePointMethods = () => {
               <CardTitle>Result</CardTitle>
             </CardHeader>
             <CardContent>
-              <p>Root approximation: {result.toPrecision(7)}</p>
+              <p className="text-center">Root approximation: {result.toPrecision(7)}</p>
             </CardContent>
           </Card>
 
@@ -70,7 +70,7 @@ const OnePointMethods = () => {
               <CardTitle>Equation Graph</CardTitle>
             </CardHeader>
             <CardContent>
-              <EquationGraph data={graphData} equation={equation} />
+              <EquationGraph data={graphData} />
             </CardContent>
           </Card>
 
