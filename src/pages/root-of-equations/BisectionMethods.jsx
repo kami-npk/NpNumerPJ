@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SharedInputForm } from './components/SharedInputForm';
 import { EquationGraph } from './components/EquationGraph';
 import { ErrorGraph } from './components/ErrorGraph';
-import { IterationTable } from './components/IterationTable';
+import { BisectionIterationTable } from './components/BisectionIterationTable';
 
 const BisectionMethods = () => {
   const [equation, setEquation] = useState("x^2 - 4");
@@ -129,7 +129,7 @@ const BisectionMethods = () => {
                 <CardTitle>Iteration Table</CardTitle>
               </CardHeader>
               <CardContent>
-                <IterationTable data={iterations} />
+                <BisectionIterationTable data={iterations} />
               </CardContent>
             </Card>
           </>
