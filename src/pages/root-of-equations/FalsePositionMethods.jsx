@@ -21,7 +21,7 @@ const FalsePositionMethods = () => {
 
   const calculateFalsePosition = (e) => {
     e.preventDefault();
-    let xm, fXm, fXr, ea;
+    let xm, fXm, fXr, fXl, ea;
     let iter = 0;
     const MAX_ITER = 50;
     const EPSILON = 0.000001;
