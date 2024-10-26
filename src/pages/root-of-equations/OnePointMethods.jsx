@@ -19,6 +19,11 @@ const OnePointMethods = () => {
     calculateRoot(equation, initialX);
   };
 
+  const formatResult = (value) => {
+    if (value === null || !isFinite(value)) return "No solution found";
+    return value.toPrecision(7);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">One-point Iteration Method</h1>
@@ -61,7 +66,7 @@ const OnePointMethods = () => {
               <CardTitle>Result</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-center">Root approximation: {result.toPrecision(7)}</p>
+              <p className="text-center font-semibold">Answer: {formatResult(result)}</p>
             </CardContent>
           </Card>
 
