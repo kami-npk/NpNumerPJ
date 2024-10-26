@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { EquationGraph } from './components/EquationGraph';
 import { ErrorGraph } from './components/ErrorGraph';
-import { IterationTable } from './components/IterationTable';
+import { SecantIterationTable } from './components/SecantIterationTable';
 import { calculateSecant } from './components/SecantCalculation';
 
 const SecantMethods = () => {
@@ -120,7 +120,7 @@ const SecantMethods = () => {
                 <CardTitle>Iteration Table</CardTitle>
               </CardHeader>
               <CardContent>
-                <IterationTable data={iterations} />
+                <SecantIterationTable data={iterations} />
               </CardContent>
             </Card>
           </>
