@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import { evaluate } from 'mathjs';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { SharedInputForm } from './components/SharedInputForm';
 import { EquationGraph } from './components/EquationGraph';
 import { ErrorGraph } from './components/ErrorGraph';
 import { SecantIterationTable } from './components/SecantIterationTable';
-import { calculateSecant } from './components/SecantCalculation';
 
 const SecantMethods = () => {
   const [equation, setEquation] = useState("x^2 - 4");
@@ -18,82 +17,105 @@ const SecantMethods = () => {
   const [graphData, setGraphData] = useState([]);
   const [errorData, setErrorData] = useState([]);
 
-  const calculateRoot = () => {
-    const results = calculateSecant(equation, parseFloat(x0), parseFloat(x1));
-    setResult(results.result);
-    
-    const iterationData = results.iterations.map((iter, index) => ({
-      iteration: iter,
-      x: results.xNew[index],
-      error: results.errors[index]
-    }));
-    setIterations(iterationData);
-    setErrorData(results.errors.map((err, i) => ({ iteration: i + 1, error: err })));
+  const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
-    // Generate equation graph data with proper error handling
-    const graphData = [];
-    const step = 0.1;
-    for (let x = -10; x <= 10; x += step) {
-      try {
-        const y = evaluate(equation, { x });
-        if (!isNaN(y) && isFinite(y)) {
-          graphData.push({ x, y });
+  const calculateRoot = () => {
+    const x0Num = parseFloat(x0);
+    const x1Num = parseFloat(x1);
+    const newIterations = [];
+    const newGraphData = [];
+    const newErrorData = [];
+    
+    let xOld = x0Num;
+    let xNew = x1Num;
+    let iter = 0;
+    const MAX_ITER = 50;
+    const EPSILON = 0.000001;
+
+    try {
+      do {
+        const fXold = evaluate(equation, { x: xOld });
+        const fXnew = evaluate(equation, { x: xNew });
+        
+        const x = xNew - (fXnew * (xOld - xNew)) / (fXold - fXnew);
+        const currentError = error(xNew, x);
+        
+        iter++;
+        newIterations.push({
+          iteration: iter,
+          xold: xOld,
+          xnew: xNew,
+          error: currentError
+        });
+        
+        newErrorData.push({ iteration: iter, error: currentError });
+        
+        if (Math.abs(x - xNew) < EPSILON || iter >= MAX_ITER) {
+          setResult(x);
+          break;
         }
-      } catch (error) {
-        console.error('Error evaluating equation:', error);
+        
+        xOld = xNew;
+        xNew = x;
+      } while (true);
+
+      // Generate graph data
+      const step = (parseFloat(x1) - parseFloat(x0)) / 100;
+      for (let x = parseFloat(x0); x <= parseFloat(x1); x += step) {
+        try {
+          const y = evaluate(equation, { x });
+          newGraphData.push({ x, y });
+        } catch (error) {
+          console.error('Error evaluating equation:', error);
+        }
       }
+
+      setIterations(newIterations);
+      setGraphData(newGraphData);
+      setErrorData(newErrorData);
+    } catch (error) {
+      console.error('Error in calculation:', error);
     }
-    setGraphData(graphData);
   };
+
+  const additionalInputs = (
+    <>
+      <div className="space-y-2">
+        <Label htmlFor="x0">X₀ (first initial value)</Label>
+        <Input
+          id="x0"
+          type="number"
+          value={x0}
+          onChange={(e) => setX0(e.target.value)}
+          placeholder="e.g., 0"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="x1">X₁ (second initial value)</Label>
+        <Input
+          id="x1"
+          type="number"
+          value={x1}
+          onChange={(e) => setX1(e.target.value)}
+          placeholder="e.g., 1"
+        />
+      </div>
+    </>
+  );
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Secant Method</h1>
       <div className="space-y-6">
-        <Card className="max-w-md mx-auto">
-          <CardHeader>
-            <CardTitle>Input</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="equation">Input Equation f(x)</Label>
-                <Input
-                  id="equation"
-                  value={equation}
-                  onChange={(e) => setEquation(e.target.value)}
-                  placeholder="e.g., x^2 - 4"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="x0">Input X₀ (first initial value)</Label>
-                <Input
-                  id="x0"
-                  type="number"
-                  value={x0}
-                  onChange={(e) => setX0(e.target.value)}
-                  placeholder="e.g., 0"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="x1">Input X₁ (second initial value)</Label>
-                <Input
-                  id="x1"
-                  type="number"
-                  value={x1}
-                  onChange={(e) => setX1(e.target.value)}
-                  placeholder="e.g., 1"
-                />
-              </div>
-              <Button onClick={calculateRoot} className="w-full">Solve</Button>
-              {result !== null && (
-                <div className="text-center mt-4">
-                  <p className="font-semibold">Answer: {result.toPrecision(7)}</p>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <SharedInputForm
+          title="Input"
+          equation={equation}
+          onEquationChange={setEquation}
+          onCalculate={calculateRoot}
+          result={result}
+        >
+          {additionalInputs}
+        </SharedInputForm>
 
         {result !== null && (
           <>

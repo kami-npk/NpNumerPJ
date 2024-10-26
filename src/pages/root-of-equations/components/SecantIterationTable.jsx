@@ -21,9 +21,9 @@ export const SecantIterationTable = ({ data }) => {
         {data.map((row, index) => (
           <TableRow key={index}>
             <TableCell>{formatValue(row.iteration)}</TableCell>
-            <TableCell>{formatValue(row.xold || row.XOld)}</TableCell>
-            <TableCell>{formatValue(row.xnew || row.XNew)}</TableCell>
-            <TableCell>{formatValue(row.error || row.Error)}</TableCell>
+            <TableCell>{formatValue(row.xold)}</TableCell>
+            <TableCell>{formatValue(row.xnew)}</TableCell>
+            <TableCell>{formatValue(row.error)}</TableCell>
           </TableRow>
         ))}
       </TableBody>
