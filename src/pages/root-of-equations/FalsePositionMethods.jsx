@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SharedInputForm } from './components/SharedInputForm';
 import { EquationGraph } from './components/EquationGraph';
 import { ErrorGraph } from './components/ErrorGraph';
-import { IterationTable } from './components/IterationTable';
+import { FalsePositionIterationTable } from './components/FalsePositionIterationTable';
 
 const FalsePositionMethods = () => {
   const [equation, setEquation] = useState("x^2 - 4");
@@ -130,7 +130,7 @@ const FalsePositionMethods = () => {
                 <CardTitle>Iteration Table</CardTitle>
               </CardHeader>
               <CardContent>
-                <IterationTable data={iterations} />
+                <FalsePositionIterationTable data={iterations} />
               </CardContent>
             </Card>
           </>
