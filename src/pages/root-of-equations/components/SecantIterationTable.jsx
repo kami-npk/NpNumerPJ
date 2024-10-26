@@ -4,7 +4,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 export const SecantIterationTable = ({ data }) => {
   const formatValue = (value) => {
     if (value === undefined || value === null) return 'N/A';
-    return typeof value === 'number' ? value.toPrecision(7) : value;
+    return typeof value === 'number' ? value.toFixed(7) : value;
   };
 
   return (
@@ -21,9 +21,9 @@ export const SecantIterationTable = ({ data }) => {
         {data.map((row, index) => (
           <TableRow key={index}>
             <TableCell>{formatValue(row.iteration)}</TableCell>
-            <TableCell>{formatValue(row.xold)}</TableCell>
-            <TableCell>{formatValue(row.xnew)}</TableCell>
-            <TableCell>{formatValue(row.error)}</TableCell>
+            <TableCell>{formatValue(row.xold || row.XOld)}</TableCell>
+            <TableCell>{formatValue(row.xnew || row.XNew)}</TableCell>
+            <TableCell>{formatValue(row.error || row.Error)}</TableCell>
           </TableRow>
         ))}
       </TableBody>
