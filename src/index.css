@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+ 
+@layer base {
+  :root {
+    --background: 223 7% 21%;
+    --foreground: 0 0% 100%;
+
+    --card: 220 8% 23%;
+    --card-foreground: 0 0% 100%;
+ 
+    --popover: 220 8% 23%;
+    --popover-foreground: 0 0% 100%;
+ 
+    --primary: 235 86% 65%;
+    --primary-foreground: 0 0% 100%;
+ 
+    --secondary: 223 6% 19%;
+    --secondary-foreground: 0 0% 100%;
+ 
+    --muted: 215 14% 31%;
+    --muted-foreground: 217 8% 70%;
+ 
+    --accent: 235 86% 65%;
+    --accent-foreground: 0 0% 100%;
+ 
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 223 7% 21%;
+    --input: 223 7% 21%;
+    --ring: 235 86% 65%;
+ 
+    --radius: 0.5rem;
+  }
+}
+ 
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-discord-dark-primary text-discord-text-normal;
+  }
+}
