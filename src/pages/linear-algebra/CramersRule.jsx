@@ -62,6 +62,36 @@ const CramersRule = () => {
         setSolution(solutions);
     };
 
+    const fetchRandomEquation = async () => {
+        try {
+            const response = await fetch("http://localhost:80/linearalgebra.php");
+            const data = await response.json();
+
+            // Randomly select an equation
+            const randomIndex = Math.floor(Math.random() * data.length);
+            const equation = data[randomIndex];
+
+            // Create Matrix A and B from the selected equation
+            const matrixA = [
+                [parseFloat(equation.a11), parseFloat(equation.a12), parseFloat(equation.a13)],
+                [parseFloat(equation.a21), parseFloat(equation.a22), parseFloat(equation.a23)],
+                [parseFloat(equation.a31), parseFloat(equation.a32), parseFloat(equation.a33)],
+            ];
+
+            const matrixB = [
+                parseFloat(equation.b1),
+                parseFloat(equation.b2),
+                parseFloat(equation.b3),
+            ];
+
+            setMatrixA(matrixA);
+            setMatrixB(matrixB);
+            setDimension(3); 
+        } catch (error) {
+            console.error("Error fetching random equation:", error);
+        }
+    };
+
     const renderMatrix = (matrix, title, highlightCol = -1) => (
         <div className="mb-4">
             <h3 className="text-xl font-semibold text-center mb-2">{title}</h3>
@@ -121,6 +151,10 @@ const CramersRule = () => {
                                 onChange={(e) => setDimension(Number(e.target.value))}
                                 className="w-24"
                             />
+                        </div>
+
+                        <div className="flex justify-center mb-4">
+                            <Button onClick={fetchRandomEquation}>Get Random Equation</Button>
                         </div>
 
                         <div className="overflow-x-auto">
@@ -184,6 +218,7 @@ const CramersRule = () => {
 
                             {renderMatrix(MatrixA, 'Matrix A')}
                             
+
                             {determinants.map((_, index) => (
                                 <div key={index}>
                                     {renderMatrix(

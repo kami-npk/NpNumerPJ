@@ -36,7 +36,7 @@ export const TrapezoidalGraph = ({ equation, a, b, n }) => {
             ]}
             type="linear"
             dataKey="y"
-            stroke="#ff7300"
+            stroke="#0288d1"
             dot={true}
           />
         ))}

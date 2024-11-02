@@ -1,12 +1,8 @@
 import React, { useState } from 'react';
 import { evaluate } from 'mathjs';
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SharedInputForm } from './components/SharedInputForm';
-import { EquationGraph } from './components/EquationGraph';
-import { ErrorGraph } from './components/ErrorGraph';
-import { SecantIterationTable } from './components/SecantIterationTable';
+import { useToast } from "@/components/ui/use-toast";
+import { SecantInputForm } from './components/SecantInputForm';
+import { SecantResults } from './components/SecantResults';
 
 const SecantMethods = () => {
   const [equation, setEquation] = useState("x^2 - 4");
@@ -16,29 +12,60 @@ const SecantMethods = () => {
   const [iterations, setIterations] = useState([]);
   const [graphData, setGraphData] = useState([]);
   const [errorData, setErrorData] = useState([]);
+  const { toast } = useToast();
+
+  const getRandomEquation = async () => {
+    try {
+      const response = await fetch('http://localhost:80/rootofequation.php');
+      const data = await response.json();
+
+      const filteredData = data.filter(item => 
+        ["6", "7", "8"].includes(item.data_id)
+      );
+
+      if (filteredData.length > 0) {
+        const randomEquation = filteredData[Math.floor(Math.random() * filteredData.length)];
+        
+        setEquation(randomEquation.fx);
+        setX0(randomEquation.xl);
+        setX1(randomEquation.xr);
+        
+        toast({
+          title: "Equation loaded",
+          description: "Random equation has been loaded successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching random equation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch random equation.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
   const calculateRoot = () => {
-    const x0Num = parseFloat(x0);
-    const x1Num = parseFloat(x1);
-    const newIterations = [];
-    const newGraphData = [];
-    const newErrorData = [];
-    
-    let xOld = x0Num;
-    let xNew = x1Num;
-    let iter = 0;
-    const MAX_ITER = 50;
-    const EPSILON = 0.000001;
-
     try {
-      // Add initial values as first iteration
+      const x0Num = parseFloat(x0);
+      const x1Num = parseFloat(x1);
+      const newIterations = [];
+      const newGraphData = [];
+      const newErrorData = [];
+      
+      let xOld = x0Num;
+      let xNew = x1Num;
+      let iter = 0;
+      const MAX_ITER = 50;
+      const EPSILON = 0.000001;
+
       newIterations.push({
         iteration: iter,
         xold: x0Num,
         xnew: x1Num,
-        error: 100 // Initial error
+        error: 100
       });
 
       do {
@@ -67,7 +94,6 @@ const SecantMethods = () => {
         xNew = x;
       } while (true);
 
-      // Generate graph data
       const step = (parseFloat(x1) - parseFloat(x0)) / 100;
       for (let x = parseFloat(x0); x <= parseFloat(x1); x += step) {
         try {
@@ -81,79 +107,43 @@ const SecantMethods = () => {
       setIterations(newIterations);
       setGraphData(newGraphData);
       setErrorData(newErrorData);
+
+      toast({
+        title: "Calculation complete",
+        description: "Root found successfully.",
+      });
     } catch (error) {
       console.error('Error in calculation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to calculate root. Please check your equation and input values.",
+        variant: "destructive",
+      });
     }
   };
-
-  const additionalInputs = (
-    <>
-      <div className="space-y-2">
-        <Label htmlFor="x0">X₀ (first initial value)</Label>
-        <Input
-          id="x0"
-          type="number"
-          value={x0}
-          onChange={(e) => setX0(e.target.value)}
-          placeholder="e.g., 0"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="x1">X₁ (second initial value)</Label>
-        <Input
-          id="x1"
-          type="number"
-          value={x1}
-          onChange={(e) => setX1(e.target.value)}
-          placeholder="e.g., 1"
-        />
-      </div>
-    </>
-  );
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-6 text-center">Secant Method</h1>
       <div className="space-y-6">
-        <SharedInputForm
-          title="Input"
+        <SecantInputForm
           equation={equation}
+          x0={x0}
+          x1={x1}
           onEquationChange={setEquation}
+          onX0Change={setX0}
+          onX1Change={setX1}
+          onGetRandom={getRandomEquation}
           onCalculate={calculateRoot}
-          result={result}
-        >
-          {additionalInputs}
-        </SharedInputForm>
+        />
 
         {result !== null && (
-          <>
-            <Card>
-              <CardHeader>
-                <CardTitle>Equation Graph</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <EquationGraph data={graphData} />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Error Graph</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ErrorGraph data={errorData} />
-              </CardContent>
-            </Card>
-
-            <Card>
-              <CardHeader>
-                <CardTitle>Iteration Table</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <SecantIterationTable data={iterations} />
-              </CardContent>
-            </Card>
-          </>
+          <SecantResults
+            result={result}
+            graphData={graphData}
+            errorData={errorData}
+            iterations={iterations}
+          />
         )}
       </div>
     </div>

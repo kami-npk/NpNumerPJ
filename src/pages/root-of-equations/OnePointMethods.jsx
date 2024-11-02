@@ -7,16 +7,51 @@ import { useCalculation } from './hooks/useOnePointCalculation';
 import { EquationGraph } from './components/EquationGraph';
 import { ErrorGraph } from './components/ErrorGraph';
 import { IterationTable } from './components/IterationTable';
+import { useToast } from "@/components/ui/use-toast";
 
 const OnePointMethods = () => {
   const [equation, setEquation] = useState("x^2 - 4");
   const [initialX, setInitialX] = useState("0");
   const { result, iterations, graphData, errorData, calculateRoot } = useCalculation();
+  const { toast } = useToast();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!equation || !initialX) return;
     calculateRoot(equation, initialX);
+  };
+
+  const getRandomEquation = async () => {
+    try {
+      const response = await fetch('http://localhost:80/rootofequation.php');
+      const data = await response.json();
+
+      // Filter to get only the required IDs
+      const filteredData = data.filter(item => 
+        ["4", "5","9"].includes(item.data_id)
+      );
+
+      // Select a random equation
+      if (filteredData.length > 0) {
+        const randomEquation = filteredData[Math.floor(Math.random() * filteredData.length)];
+        
+        // Set the values directly from the API response
+        setEquation(randomEquation.fx);
+        setInitialX(randomEquation.initial_x);
+        
+        toast({
+          title: "Equation loaded",
+          description: "Random equation has been loaded successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching random equation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch random equation.",
+        variant: "destructive",
+      });
+    }
   };
 
   const formatResult = (value) => {
@@ -53,7 +88,11 @@ const OnePointMethods = () => {
                   placeholder="e.g., 0"
                 />
               </div>
+              <Button onClick={getRandomEquation} variant="outline" className="w-full mt-2">
+                Get Random Equation
+              </Button>
               <Button type="submit" className="w-full">Solve</Button>
+              
             </form>
           </CardContent>
         </Card>

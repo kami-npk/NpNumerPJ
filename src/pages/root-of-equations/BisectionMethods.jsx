@@ -7,6 +7,8 @@ import { SharedInputForm } from './components/SharedInputForm';
 import { EquationGraph } from './components/EquationGraph';
 import { ErrorGraph } from './components/ErrorGraph';
 import { BisectionIterationTable } from './components/BisectionIterationTable';
+import { Button } from "@/components/ui/button"; // Import Button
+import { useToast } from "@/components/ui/use-toast"; // Import useToast
 
 const BisectionMethods = () => {
   const [equation, setEquation] = useState("x^2 - 4");
@@ -16,6 +18,40 @@ const BisectionMethods = () => {
   const [iterations, setIterations] = useState([]);
   const [graphData, setGraphData] = useState([]);
   const [errorData, setErrorData] = useState([]);
+  const { toast } = useToast(); 
+
+  const getRandomEquation = async () => {
+    try {
+      const response = await fetch('http://localhost:80/rootofequation.php');
+      const data = await response.json();
+
+   
+      const filteredData = data.filter(item => 
+        ["1", "2", "3"].includes(item.data_id)
+      );
+
+      if (filteredData.length > 0) {
+        const randomEquation = filteredData[Math.floor(Math.random() * filteredData.length)];
+        
+        // Set the values directly from the API response
+        setEquation(randomEquation.fx);
+        setXL(randomEquation.xl); 
+        setXR(randomEquation.xr); 
+        
+        toast({
+          title: "Equation loaded",
+          description: "Random equation has been loaded successfully.",
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching random equation:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch random equation.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const error = (xold, xnew) => Math.abs((xnew - xold) / xnew) * 100;
 
@@ -53,7 +89,6 @@ const BisectionMethods = () => {
     setIterations(newIterations);
     setErrorData(newErrorData);
 
-    // Generate equation graph data
     const graphData = [];
     const step = (parseFloat(xr) - parseFloat(xl)) / 100;
     for (let x = parseFloat(xl); x <= parseFloat(xr); x += step) {
@@ -87,6 +122,13 @@ const BisectionMethods = () => {
           placeholder="e.g., 3"
         />
       </div>
+      <Button 
+        onClick={getRandomEquation} 
+        variant="outline" 
+        className="w-full"
+      >
+        Get Random Equation
+      </Button>
     </>
   );
 
